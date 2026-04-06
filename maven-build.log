@@ -1,0 +1,418 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ---------------------< com.flash:interview-flash >----------------------
+[INFO] Building interview-flash 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.3.2:clean (default-clean) @ interview-flash ---
+[INFO] Deleting /root/my-project/interview-flash/target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ interview-flash ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.11.0:compile (default-compile) @ interview-flash ---
+[INFO] Changes detected - recompiling the module! :source
+[INFO] Compiling 18 source files with javac [debug release 17] to target/classes
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/Question.java:[4,14] package lombok does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/Question.java:[5,14] package lombok does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/Question.java:[10,2] cannot find symbol
+  symbol: class Data
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/Question.java:[11,2] cannot find symbol
+  symbol: class NoArgsConstructor
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/Question.java:[12,2] cannot find symbol
+  symbol: class Entity
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/Question.java:[13,2] cannot find symbol
+  symbol: class Table
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/Category.java:[4,14] package lombok does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/Category.java:[5,14] package lombok does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/Category.java:[9,2] cannot find symbol
+  symbol: class Data
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/Category.java:[10,2] cannot find symbol
+  symbol: class NoArgsConstructor
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/Category.java:[11,2] cannot find symbol
+  symbol: class Entity
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/Category.java:[12,2] cannot find symbol
+  symbol: class Table
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/UserProgress.java:[4,14] package lombok does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/UserProgress.java:[5,14] package lombok does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/UserProgress.java:[8,2] cannot find symbol
+  symbol: class Data
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/UserProgress.java:[9,2] cannot find symbol
+  symbol: class NoArgsConstructor
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/UserProgress.java:[10,2] cannot find symbol
+  symbol: class Entity
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/UserProgress.java:[11,2] cannot find symbol
+  symbol: class Table
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/Question.java:[3,1] package jakarta.persistence does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/UserProgress.java:[3,1] package jakarta.persistence does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/Category.java:[3,1] package jakarta.persistence does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/CategoryController.java:[5,14] package lombok does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/CategoryController.java:[6,32] package org.springframework.http does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/CategoryController.java:[10,2] cannot find symbol
+  symbol: class RestController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/CategoryController.java:[11,2] cannot find symbol
+  symbol: class RequestMapping
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/CategoryController.java:[12,2] cannot find symbol
+  symbol: class RequiredArgsConstructor
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/CategoryService.java:[7,14] package lombok does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/CategoryService.java:[8,38] package org.springframework.stereotype does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/CategoryService.java:[9,50] package org.springframework.transaction.annotation does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/CategoryService.java:[13,2] cannot find symbol
+  symbol: class Service
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/CategoryService.java:[14,2] cannot find symbol
+  symbol: class RequiredArgsConstructor
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/CategoryService.java:[15,2] cannot find symbol
+  symbol: class Transactional
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/CategoryController.java:[18,12] cannot find symbol
+  symbol:   class ResponseEntity
+  location: class com.flash.controller.CategoryController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/dto/CategoryDTO.java:[3,14] package lombok does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/dto/CategoryDTO.java:[5,2] cannot find symbol
+  symbol: class Data
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/CategoryController.java:[23,12] cannot find symbol
+  symbol:   class ResponseEntity
+  location: class com.flash.controller.CategoryController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/CategoryController.java:[29,26] cannot find symbol
+  symbol:   class Map
+  location: class com.flash.controller.CategoryController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/CategoryController.java:[28,12] cannot find symbol
+  symbol:   class ResponseEntity
+  location: class com.flash.controller.CategoryController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/CategoryController.java:[38,26] cannot find symbol
+  symbol:   class Map
+  location: class com.flash.controller.CategoryController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/CategoryController.java:[36,12] cannot find symbol
+  symbol:   class ResponseEntity
+  location: class com.flash.controller.CategoryController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/CategoryController.java:[46,12] cannot find symbol
+  symbol:   class ResponseEntity
+  location: class com.flash.controller.CategoryController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/CategoryRepository.java:[4,47] package org.springframework.data.jpa.repository does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/CategoryRepository.java:[5,38] package org.springframework.stereotype does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/CategoryRepository.java:[10,45] cannot find symbol
+  symbol: class JpaRepository
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/CategoryRepository.java:[9,2] cannot find symbol
+  symbol: class Repository
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[5,39] package org.springframework.data.domain does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[6,39] package org.springframework.data.domain does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[7,47] package org.springframework.data.jpa.repository does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[8,47] package org.springframework.data.jpa.repository does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[9,49] package org.springframework.data.repository.query does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[10,38] package org.springframework.stereotype does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[14,45] cannot find symbol
+  symbol: class JpaRepository
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[13,2] cannot find symbol
+  symbol: class Repository
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[16,54] cannot find symbol
+  symbol:   class Pageable
+  location: interface com.flash.repository.QuestionRepository
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[16,5] cannot find symbol
+  symbol:   class Page
+  location: interface com.flash.repository.QuestionRepository
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[18,69] cannot find symbol
+  symbol:   class Pageable
+  location: interface com.flash.repository.QuestionRepository
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[18,5] cannot find symbol
+  symbol:   class Page
+  location: interface com.flash.repository.QuestionRepository
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[20,99] cannot find symbol
+  symbol:   class Pageable
+  location: interface com.flash.repository.QuestionRepository
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[20,5] cannot find symbol
+  symbol:   class Page
+  location: interface com.flash.repository.QuestionRepository
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[23,70] cannot find symbol
+  symbol:   class Pageable
+  location: interface com.flash.repository.QuestionRepository
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[23,5] cannot find symbol
+  symbol:   class Page
+  location: interface com.flash.repository.QuestionRepository
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/CategoryController.java:[7,1] package org.springframework.web.bind.annotation does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[7,26] package jakarta.validation does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[8,14] package lombok does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[9,39] package org.springframework.data.domain does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[10,39] package org.springframework.data.domain does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[11,39] package org.springframework.data.domain does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[12,32] package org.springframework.http does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[17,2] cannot find symbol
+  symbol: class RestController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[18,2] cannot find symbol
+  symbol: class RequestMapping
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[19,2] cannot find symbol
+  symbol: class RequiredArgsConstructor
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/QuestionService.java:[9,14] package lombok does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/QuestionService.java:[10,39] package org.springframework.data.domain does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/QuestionService.java:[11,39] package org.springframework.data.domain does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/QuestionService.java:[12,38] package org.springframework.stereotype does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/QuestionService.java:[13,50] package org.springframework.transaction.annotation does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/QuestionService.java:[17,2] cannot find symbol
+  symbol: class Service
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/QuestionService.java:[18,2] cannot find symbol
+  symbol: class RequiredArgsConstructor
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/QuestionService.java:[19,2] cannot find symbol
+  symbol: class Transactional
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[25,12] cannot find symbol
+  symbol:   class ResponseEntity
+  location: class com.flash.controller.QuestionController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[25,27] cannot find symbol
+  symbol:   class Page
+  location: class com.flash.controller.QuestionController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/dto/QuestionDTO.java:[3,14] package lombok does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/dto/QuestionDTO.java:[6,2] cannot find symbol
+  symbol: class Data
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[49,12] cannot find symbol
+  symbol:   class ResponseEntity
+  location: class com.flash.controller.QuestionController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[61,12] cannot find symbol
+  symbol:   class ResponseEntity
+  location: class com.flash.controller.QuestionController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[61,27] cannot find symbol
+  symbol:   class Page
+  location: class com.flash.controller.QuestionController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[71,12] cannot find symbol
+  symbol:   class ResponseEntity
+  location: class com.flash.controller.QuestionController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/dto/CreateQuestionDTO.java:[3,38] package jakarta.validation.constraints does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/dto/CreateQuestionDTO.java:[4,38] package jakarta.validation.constraints does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/dto/CreateQuestionDTO.java:[5,14] package lombok does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/dto/CreateQuestionDTO.java:[7,2] cannot find symbol
+  symbol: class Data
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[76,12] cannot find symbol
+  symbol:   class ResponseEntity
+  location: class com.flash.controller.QuestionController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[82,12] cannot find symbol
+  symbol:   class ResponseEntity
+  location: class com.flash.controller.QuestionController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[89,12] cannot find symbol
+  symbol:   class ResponseEntity
+  location: class com.flash.controller.QuestionController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/QuestionService.java:[25,70] cannot find symbol
+  symbol:   class Pageable
+  location: class com.flash.service.QuestionService
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/QuestionService.java:[25,12] cannot find symbol
+  symbol:   class Page
+  location: class com.flash.service.QuestionService
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/QuestionService.java:[30,87] cannot find symbol
+  symbol:   class Pageable
+  location: class com.flash.service.QuestionService
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/QuestionService.java:[30,12] cannot find symbol
+  symbol:   class Page
+  location: class com.flash.service.QuestionService
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/QuestionService.java:[35,62] cannot find symbol
+  symbol:   class Pageable
+  location: class com.flash.service.QuestionService
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/QuestionService.java:[35,12] cannot find symbol
+  symbol:   class Page
+  location: class com.flash.service.QuestionService
+[INFO] 100 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  2.353 s
+[INFO] Finished at: 2026-04-03T18:55:11+08:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.11.0:compile (default-compile) on project interview-flash: Compilation failure: Compilation failure: 
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/Question.java:[4,14] package lombok does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/Question.java:[5,14] package lombok does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/Question.java:[10,2] cannot find symbol
+[ERROR]   symbol: class Data
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/Question.java:[11,2] cannot find symbol
+[ERROR]   symbol: class NoArgsConstructor
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/Question.java:[12,2] cannot find symbol
+[ERROR]   symbol: class Entity
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/Question.java:[13,2] cannot find symbol
+[ERROR]   symbol: class Table
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/Category.java:[4,14] package lombok does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/Category.java:[5,14] package lombok does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/Category.java:[9,2] cannot find symbol
+[ERROR]   symbol: class Data
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/Category.java:[10,2] cannot find symbol
+[ERROR]   symbol: class NoArgsConstructor
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/Category.java:[11,2] cannot find symbol
+[ERROR]   symbol: class Entity
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/Category.java:[12,2] cannot find symbol
+[ERROR]   symbol: class Table
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/UserProgress.java:[4,14] package lombok does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/UserProgress.java:[5,14] package lombok does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/UserProgress.java:[8,2] cannot find symbol
+[ERROR]   symbol: class Data
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/UserProgress.java:[9,2] cannot find symbol
+[ERROR]   symbol: class NoArgsConstructor
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/UserProgress.java:[10,2] cannot find symbol
+[ERROR]   symbol: class Entity
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/UserProgress.java:[11,2] cannot find symbol
+[ERROR]   symbol: class Table
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/Question.java:[3,1] package jakarta.persistence does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/UserProgress.java:[3,1] package jakarta.persistence does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/entity/Category.java:[3,1] package jakarta.persistence does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/CategoryController.java:[5,14] package lombok does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/CategoryController.java:[6,32] package org.springframework.http does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/CategoryController.java:[10,2] cannot find symbol
+[ERROR]   symbol: class RestController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/CategoryController.java:[11,2] cannot find symbol
+[ERROR]   symbol: class RequestMapping
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/CategoryController.java:[12,2] cannot find symbol
+[ERROR]   symbol: class RequiredArgsConstructor
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/CategoryService.java:[7,14] package lombok does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/CategoryService.java:[8,38] package org.springframework.stereotype does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/CategoryService.java:[9,50] package org.springframework.transaction.annotation does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/CategoryService.java:[13,2] cannot find symbol
+[ERROR]   symbol: class Service
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/CategoryService.java:[14,2] cannot find symbol
+[ERROR]   symbol: class RequiredArgsConstructor
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/CategoryService.java:[15,2] cannot find symbol
+[ERROR]   symbol: class Transactional
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/CategoryController.java:[18,12] cannot find symbol
+[ERROR]   symbol:   class ResponseEntity
+[ERROR]   location: class com.flash.controller.CategoryController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/dto/CategoryDTO.java:[3,14] package lombok does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/dto/CategoryDTO.java:[5,2] cannot find symbol
+[ERROR]   symbol: class Data
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/CategoryController.java:[23,12] cannot find symbol
+[ERROR]   symbol:   class ResponseEntity
+[ERROR]   location: class com.flash.controller.CategoryController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/CategoryController.java:[29,26] cannot find symbol
+[ERROR]   symbol:   class Map
+[ERROR]   location: class com.flash.controller.CategoryController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/CategoryController.java:[28,12] cannot find symbol
+[ERROR]   symbol:   class ResponseEntity
+[ERROR]   location: class com.flash.controller.CategoryController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/CategoryController.java:[38,26] cannot find symbol
+[ERROR]   symbol:   class Map
+[ERROR]   location: class com.flash.controller.CategoryController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/CategoryController.java:[36,12] cannot find symbol
+[ERROR]   symbol:   class ResponseEntity
+[ERROR]   location: class com.flash.controller.CategoryController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/CategoryController.java:[46,12] cannot find symbol
+[ERROR]   symbol:   class ResponseEntity
+[ERROR]   location: class com.flash.controller.CategoryController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/CategoryRepository.java:[4,47] package org.springframework.data.jpa.repository does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/CategoryRepository.java:[5,38] package org.springframework.stereotype does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/CategoryRepository.java:[10,45] cannot find symbol
+[ERROR]   symbol: class JpaRepository
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/CategoryRepository.java:[9,2] cannot find symbol
+[ERROR]   symbol: class Repository
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[5,39] package org.springframework.data.domain does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[6,39] package org.springframework.data.domain does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[7,47] package org.springframework.data.jpa.repository does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[8,47] package org.springframework.data.jpa.repository does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[9,49] package org.springframework.data.repository.query does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[10,38] package org.springframework.stereotype does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[14,45] cannot find symbol
+[ERROR]   symbol: class JpaRepository
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[13,2] cannot find symbol
+[ERROR]   symbol: class Repository
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[16,54] cannot find symbol
+[ERROR]   symbol:   class Pageable
+[ERROR]   location: interface com.flash.repository.QuestionRepository
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[16,5] cannot find symbol
+[ERROR]   symbol:   class Page
+[ERROR]   location: interface com.flash.repository.QuestionRepository
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[18,69] cannot find symbol
+[ERROR]   symbol:   class Pageable
+[ERROR]   location: interface com.flash.repository.QuestionRepository
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[18,5] cannot find symbol
+[ERROR]   symbol:   class Page
+[ERROR]   location: interface com.flash.repository.QuestionRepository
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[20,99] cannot find symbol
+[ERROR]   symbol:   class Pageable
+[ERROR]   location: interface com.flash.repository.QuestionRepository
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[20,5] cannot find symbol
+[ERROR]   symbol:   class Page
+[ERROR]   location: interface com.flash.repository.QuestionRepository
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[23,70] cannot find symbol
+[ERROR]   symbol:   class Pageable
+[ERROR]   location: interface com.flash.repository.QuestionRepository
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/repository/QuestionRepository.java:[23,5] cannot find symbol
+[ERROR]   symbol:   class Page
+[ERROR]   location: interface com.flash.repository.QuestionRepository
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/CategoryController.java:[7,1] package org.springframework.web.bind.annotation does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[7,26] package jakarta.validation does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[8,14] package lombok does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[9,39] package org.springframework.data.domain does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[10,39] package org.springframework.data.domain does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[11,39] package org.springframework.data.domain does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[12,32] package org.springframework.http does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[17,2] cannot find symbol
+[ERROR]   symbol: class RestController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[18,2] cannot find symbol
+[ERROR]   symbol: class RequestMapping
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[19,2] cannot find symbol
+[ERROR]   symbol: class RequiredArgsConstructor
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/QuestionService.java:[9,14] package lombok does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/QuestionService.java:[10,39] package org.springframework.data.domain does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/QuestionService.java:[11,39] package org.springframework.data.domain does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/QuestionService.java:[12,38] package org.springframework.stereotype does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/QuestionService.java:[13,50] package org.springframework.transaction.annotation does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/QuestionService.java:[17,2] cannot find symbol
+[ERROR]   symbol: class Service
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/QuestionService.java:[18,2] cannot find symbol
+[ERROR]   symbol: class RequiredArgsConstructor
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/QuestionService.java:[19,2] cannot find symbol
+[ERROR]   symbol: class Transactional
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[25,12] cannot find symbol
+[ERROR]   symbol:   class ResponseEntity
+[ERROR]   location: class com.flash.controller.QuestionController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[25,27] cannot find symbol
+[ERROR]   symbol:   class Page
+[ERROR]   location: class com.flash.controller.QuestionController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/dto/QuestionDTO.java:[3,14] package lombok does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/dto/QuestionDTO.java:[6,2] cannot find symbol
+[ERROR]   symbol: class Data
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[49,12] cannot find symbol
+[ERROR]   symbol:   class ResponseEntity
+[ERROR]   location: class com.flash.controller.QuestionController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[61,12] cannot find symbol
+[ERROR]   symbol:   class ResponseEntity
+[ERROR]   location: class com.flash.controller.QuestionController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[61,27] cannot find symbol
+[ERROR]   symbol:   class Page
+[ERROR]   location: class com.flash.controller.QuestionController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[71,12] cannot find symbol
+[ERROR]   symbol:   class ResponseEntity
+[ERROR]   location: class com.flash.controller.QuestionController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/dto/CreateQuestionDTO.java:[3,38] package jakarta.validation.constraints does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/dto/CreateQuestionDTO.java:[4,38] package jakarta.validation.constraints does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/dto/CreateQuestionDTO.java:[5,14] package lombok does not exist
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/dto/CreateQuestionDTO.java:[7,2] cannot find symbol
+[ERROR]   symbol: class Data
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[76,12] cannot find symbol
+[ERROR]   symbol:   class ResponseEntity
+[ERROR]   location: class com.flash.controller.QuestionController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[82,12] cannot find symbol
+[ERROR]   symbol:   class ResponseEntity
+[ERROR]   location: class com.flash.controller.QuestionController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/controller/QuestionController.java:[89,12] cannot find symbol
+[ERROR]   symbol:   class ResponseEntity
+[ERROR]   location: class com.flash.controller.QuestionController
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/QuestionService.java:[25,70] cannot find symbol
+[ERROR]   symbol:   class Pageable
+[ERROR]   location: class com.flash.service.QuestionService
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/QuestionService.java:[25,12] cannot find symbol
+[ERROR]   symbol:   class Page
+[ERROR]   location: class com.flash.service.QuestionService
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/QuestionService.java:[30,87] cannot find symbol
+[ERROR]   symbol:   class Pageable
+[ERROR]   location: class com.flash.service.QuestionService
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/QuestionService.java:[30,12] cannot find symbol
+[ERROR]   symbol:   class Page
+[ERROR]   location: class com.flash.service.QuestionService
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/QuestionService.java:[35,62] cannot find symbol
+[ERROR]   symbol:   class Pageable
+[ERROR]   location: class com.flash.service.QuestionService
+[ERROR] /root/my-project/interview-flash/src/main/java/com/flash/service/QuestionService.java:[35,12] cannot find symbol
+[ERROR]   symbol:   class Page
+[ERROR]   location: class com.flash.service.QuestionService
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
