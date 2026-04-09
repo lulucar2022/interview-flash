@@ -1,5 +1,6 @@
 package com.flash.controller;
 
+import com.flash.dto.ApiResponse;
 import com.flash.dto.CategoryDTO;
 import com.flash.dto.CreateCategoryDTO;
 import com.flash.service.CategoryService;
@@ -8,7 +9,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -22,36 +22,36 @@ public class CategoryController {
 
     @Operation(summary = "获取所有分类")
     @GetMapping
-    public ResponseEntity<List<CategoryDTO>> getAllCategories() {
-        return ResponseEntity.ok(categoryService.getAllCategories());
+    public ApiResponse<List<CategoryDTO>> getAllCategories() {
+        return ApiResponse.success(categoryService.getAllCategories());
     }
 
     @Operation(summary = "根据ID获取分类")
     @GetMapping("/{id}")
-    public ResponseEntity<CategoryDTO> getCategoryById(
+    public ApiResponse<CategoryDTO> getCategoryById(
             @Parameter(description = "分类ID") @PathVariable Long id) {
-        return ResponseEntity.ok(categoryService.getCategoryById(id));
+        return ApiResponse.success(categoryService.getCategoryById(id));
     }
 
     @Operation(summary = "创建分类")
     @PostMapping
-    public ResponseEntity<CategoryDTO> createCategory(@Valid @RequestBody CreateCategoryDTO dto) {
-        return ResponseEntity.ok(categoryService.createCategory(dto.getName(), dto.getDescription()));
+    public ApiResponse<CategoryDTO> createCategory(@Valid @RequestBody CreateCategoryDTO dto) {
+        return ApiResponse.success("创建成功", categoryService.createCategory(dto.getName(), dto.getDescription()));
     }
 
     @Operation(summary = "更新分类")
     @PutMapping("/{id}")
-    public ResponseEntity<CategoryDTO> updateCategory(
+    public ApiResponse<CategoryDTO> updateCategory(
             @Parameter(description = "分类ID") @PathVariable Long id,
             @Valid @RequestBody CreateCategoryDTO dto) {
-        return ResponseEntity.ok(categoryService.updateCategory(id, dto.getName(), dto.getDescription()));
+        return ApiResponse.success("更新成功", categoryService.updateCategory(id, dto.getName(), dto.getDescription()));
     }
 
     @Operation(summary = "删除分类")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategory(
+    public ApiResponse<Void> deleteCategory(
             @Parameter(description = "分类ID") @PathVariable Long id) {
         categoryService.deleteCategory(id);
-        return ResponseEntity.noContent().build();
+        return ApiResponse.success("删除成功", null);
     }
 }
