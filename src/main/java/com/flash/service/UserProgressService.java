@@ -79,6 +79,8 @@ public class UserProgressService {
             progress.setQuestion(question);
             progress.setUserId(userId);
             progress.setStatus(UserProgress.Status.LEARNING);
+            progress.setReviewCount(0);
+            progress.setIsFavorite(false);
         }
         
         if (dto.getIsCorrect() != null) {
@@ -91,7 +93,7 @@ public class UserProgressService {
             progress.setStatus(UserProgress.Status.valueOf(dto.getStatus()));
         }
         
-        progress.setReviewCount(progress.getReviewCount() + 1);
+        progress.setReviewCount((progress.getReviewCount() == null ? 0 : progress.getReviewCount()) + 1);
         progress.setLastReviewedAt(LocalDateTime.now());
         
         return convertToDTO(userProgressRepository.save(progress));
