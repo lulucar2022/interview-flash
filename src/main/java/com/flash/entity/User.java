@@ -5,6 +5,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
+/**
+ * 用户实体
+ * 对应数据库表：users
+ */
 @Data
 @NoArgsConstructor
 @Entity
@@ -33,12 +37,20 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    /**
+     * 持久化前自动执行
+     * 初始化创建时间和更新时间
+     */
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
     }
 
+    /**
+     * 更新前自动执行
+     * 自动更新修改时间
+     */
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();

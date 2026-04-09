@@ -7,6 +7,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 题目实体
+ * 对应数据库表：questions
+ */
 @Data
 @NoArgsConstructor
 @Entity
@@ -26,6 +30,10 @@ public class Question {
     @Column(columnDefinition = "TEXT")
     private String answer;
 
+    /**
+     * 关联分类（多对一）
+     * 每个题目属于一个分类
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
@@ -34,6 +42,10 @@ public class Question {
     @Enumerated(EnumType.STRING)
     private Difficulty difficulty;
 
+    /**
+     * 关联用户进度（一对多）
+     * 一个题目可以有多个用户的学习进度记录
+     */
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<UserProgress> userProgresses = new ArrayList<>();
 
@@ -54,6 +66,9 @@ public class Question {
         updatedAt = LocalDateTime.now();
     }
 
+    /**
+     * 题目难度枚举
+     */
     public enum Difficulty {
         EASY,      // 简单
         MEDIUM,    // 中等
