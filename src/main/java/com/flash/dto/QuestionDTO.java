@@ -11,6 +11,8 @@ public class QuestionDTO {
     private String answer;
     private Long categoryId;
     private String categoryName;
+    private String type;
+    private String options;
     private String difficulty;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

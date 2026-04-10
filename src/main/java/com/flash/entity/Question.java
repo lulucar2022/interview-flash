@@ -31,6 +31,14 @@ public class Question {
     private String answer;
 
     /**
+     * 题目选项（JSON格式）
+     * 用于单选、多选、判断题
+     * 格式: [{"label": "A", "content": "选项内容"}, ...]
+     */
+    @Column(columnDefinition = "JSONB")
+    private String options;
+
+    /**
      * 关联分类（多对一）
      * 每个题目属于一个分类
      */
