@@ -38,6 +38,20 @@ public class Question {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
+    /**
+     * 题目类型
+     * SINGLE_CHOICE: 单选题
+     * MULTIPLE_CHOICE: 多选题
+     * TRUE_FALSE: 判断题
+     * FILL_BLANK: 填空题
+     * SHORT_ANSWER: 简答题
+     * CODING: 编程题
+     * SCENARIO: 情景分析题
+     */
+    @Column(length = 20)
+    @Enumerated(EnumType.STRING)
+    private QuestionType type;
+
     @Column(length = 20)
     @Enumerated(EnumType.STRING)
     private Difficulty difficulty;
@@ -59,11 +73,27 @@ public class Question {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
+        if (type == null) {
+            type = QuestionType.SINGLE_CHOICE;
+        }
     }
 
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * 题目类型枚举
+     */
+    public enum QuestionType {
+        SINGLE_CHOICE,    // 单选题
+        MULTIPLE_CHOICE,  // 多选题
+        TRUE_FALSE,       // 判断题
+        FILL_BLANK,       // 填空题
+        SHORT_ANSWER,     // 简答题
+        CODING,           // 编程题
+        SCENARIO          // 情景分析题
     }
 
     /**
