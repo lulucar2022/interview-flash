@@ -28,6 +28,13 @@ public class QuestionService {
     private final CategoryRepository categoryRepository;
 
     /**
+     * 获取题目总数
+     */
+    public long getTotalCount() {
+        return questionRepository.count();
+    }
+
+    /**
      * 根据分类查询题目列表
      */
     public Page<QuestionDTO> getQuestionsByCategory(Long categoryId, Pageable pageable) {

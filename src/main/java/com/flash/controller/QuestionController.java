@@ -23,6 +23,12 @@ public class QuestionController {
 
     private final QuestionService questionService;
 
+    @Operation(summary = "获取题目总数")
+    @GetMapping("/count")
+    public ApiResponse<Long> getTotalCount() {
+        return ApiResponse.success(questionService.getTotalCount());
+    }
+
     @Operation(summary = "获取题目列表", description = "支持按分类和难度筛选，分页返回")
     @GetMapping
     public ApiResponse<Page<QuestionDTO>> getQuestions(
