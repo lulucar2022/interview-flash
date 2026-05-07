@@ -1,17 +1,18 @@
-FROM maven:3.9-eclipse-temurin-17 AS builder
+FROM gradle:8.7-jdk17 AS builder
 
 WORKDIR /app
 
-COPY pom.xml .
+COPY build.gradle settings.gradle gradlew ./
+COPY gradle/wrapper ./gradle/wrapper
 COPY src ./src
 
-RUN mvn clean package -DskipTests
+RUN ./gradlew bootJar -x test --no-daemon
 
 FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
-COPY --from=builder /app/target/*.jar app.jar
+COPY --from=builder /app/build/libs/app.jar app.jar
 
 EXPOSE 8080
 
