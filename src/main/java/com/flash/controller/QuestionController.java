@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,13 @@ public class QuestionController {
     @GetMapping("/count")
     public ApiResponse<Long> getTotalCount() {
         return ApiResponse.success(questionService.getTotalCount());
+    }
+
+    @Operation(summary = "获取热门题目")
+    @GetMapping("/hot")
+    public ApiResponse<List<QuestionDTO>> getHotQuestions(
+            @Parameter(description = "数量") @RequestParam(defaultValue = "5") int size) {
+        return ApiResponse.success(questionService.getHotQuestions(size));
     }
 
     @Operation(summary = "获取题目列表", description = "支持按分类和难度筛选，分页返回")

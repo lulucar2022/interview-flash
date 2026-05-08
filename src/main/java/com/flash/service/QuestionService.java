@@ -5,14 +5,16 @@ import com.flash.entity.Question;
 import com.flash.exception.BusinessException;
 import com.flash.repository.CategoryRepository;
 import com.flash.repository.QuestionRepository;
+import com.flash.repository.UserProgressRepository;
 import com.flash.dto.QuestionDTO;
 import com.flash.dto.CreateQuestionDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -26,12 +28,70 @@ public class QuestionService {
 
     private final QuestionRepository questionRepository;
     private final CategoryRepository categoryRepository;
+    private final UserProgressRepository userProgressRepository;
 
     /**
      * 获取题目总数
      */
     public long getTotalCount() {
         return questionRepository.count();
+    }
+
+    /**
+     * 获取热门题目
+     * 根据答题次数、独立用户数、近期活跃度、错误率加权排序
+     */
+    public List<QuestionDTO> getHotQuestions(int size) {
+        List<Object[]> stats = userProgressRepository.getHotQuestionStats();
+        if (stats.isEmpty()) {
+            return questionRepository.findAll(PageRequest.of(0, size))
+                    .stream().map(this::convertToDTO).collect(Collectors.toList());
+        }
+
+        long maxTotal = 0, maxUnique = 0, maxRecent = 0;
+        for (Object[] row : stats) {
+            long total = ((Number) row[1]).longValue();
+            long unique = ((Number) row[2]).longValue();
+            long recent = ((Number) row[3]).longValue();
+            if (total > maxTotal) maxTotal = total;
+            if (unique > maxUnique) maxUnique = unique;
+            if (recent > maxRecent) maxRecent = recent;
+        }
+
+        List<long[]> scored = new ArrayList<>();
+        for (Object[] row : stats) {
+            long questionId = ((Number) row[0]).longValue();
+            long total = ((Number) row[1]).longValue();
+            long unique = ((Number) row[2]).longValue();
+            long recent = ((Number) row[3]).longValue();
+            long errors = ((Number) row[4]).longValue();
+
+            double totalScore = maxTotal > 0 ? (double) total / maxTotal * 0.4 : 0;
+            double uniqueScore = maxUnique > 0 ? (double) unique / maxUnique * 0.3 : 0;
+            double recentScore = maxRecent > 0 ? (double) recent / maxRecent * 0.2 : 0;
+            double errorRate = total > 0 ? (double) errors / total : 0;
+            double errorScore = errorRate * 0.1;
+
+            long scoreBits = Double.doubleToLongBits(totalScore + uniqueScore + recentScore + errorScore);
+            scored.add(new long[]{questionId, scoreBits});
+        }
+
+        scored.sort((a, b) -> Double.compare(Double.longBitsToDouble(b[1]), Double.longBitsToDouble(a[1])));
+
+        List<Long> topIds = scored.stream()
+                .limit(size)
+                .map(s -> s[0])
+                .collect(Collectors.toList());
+
+        Map<Long, Question> questionMap = questionRepository.findAllById(topIds).stream()
+                .collect(Collectors.toMap(Question::getId, q -> q));
+
+        List<QuestionDTO> result = new ArrayList<>();
+        for (Long id : topIds) {
+            Question q = questionMap.get(id);
+            if (q != null) result.add(convertToDTO(q));
+        }
+        return result;
     }
 
     /**

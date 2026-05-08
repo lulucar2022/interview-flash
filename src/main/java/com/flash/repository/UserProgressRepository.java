@@ -27,4 +27,16 @@ public interface UserProgressRepository extends JpaRepository<UserProgress, Long
     long countByUserIdAndStatus(Integer userId, UserProgress.Status status);
     
     long countByUserIdAndIsCorrect(Integer userId, Boolean isCorrect);
+
+    @Query(value = """
+        SELECT
+            up.question_id,
+            COUNT(*) AS total_attempts,
+            COUNT(DISTINCT up.user_id) AS unique_users,
+            COUNT(*) FILTER (WHERE up.last_reviewed_at >= CURRENT_DATE - 7) AS recent_attempts,
+            COUNT(*) FILTER (WHERE up.is_correct = false) AS error_count
+        FROM user_progress up
+        GROUP BY up.question_id
+        """, nativeQuery = true)
+    List<Object[]> getHotQuestionStats();
 }
