@@ -25,4 +25,13 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     List<Question> findByCategoryIdOrderByCreatedAtDesc(Long categoryId);
     
     long countByCategoryId(Long categoryId);
+
+    @Query(value = "SELECT * FROM questions ORDER BY RANDOM() LIMIT :limit", nativeQuery = true)
+    List<Question> findRandomQuestions(@Param("limit") int limit);
+
+    @Query(value = "SELECT * FROM questions WHERE id NOT IN (SELECT question_id FROM user_progress WHERE user_id = :userId) ORDER BY RANDOM() LIMIT :limit", nativeQuery = true)
+    List<Question> findRandomUnpracticedQuestions(@Param("userId") Integer userId, @Param("limit") int limit);
+
+    @Query(value = "SELECT q.* FROM questions q JOIN user_progress up ON q.id = up.question_id WHERE up.user_id = :userId AND up.is_correct = false ORDER BY RANDOM() LIMIT :limit", nativeQuery = true)
+    List<Question> findRandomWrongQuestions(@Param("userId") Integer userId, @Param("limit") int limit);
 }

@@ -38,6 +38,40 @@ public class QuestionService {
     }
 
     /**
+     * 获取随机题目列表（智能算法）
+     * 优先返回未练习的题目，其次为错题，再补全随机题
+     */
+    public List<QuestionDTO> getRandomQuestions(Integer userId, int size) {
+        List<Question> result = new ArrayList<>();
+        Set<Long> added = new HashSet<>();
+
+        int half = size / 2;
+        List<Question> unpracticed = questionRepository.findRandomUnpracticedQuestions(userId, half);
+        for (Question q : unpracticed) {
+            if (added.add(q.getId())) result.add(q);
+        }
+
+        int remaining = size - result.size();
+        if (remaining > 0) {
+            List<Question> wrong = questionRepository.findRandomWrongQuestions(userId, remaining);
+            for (Question q : wrong) {
+                if (added.add(q.getId())) result.add(q);
+            }
+        }
+
+        remaining = size - result.size();
+        if (remaining > 0) {
+            List<Question> random = questionRepository.findRandomQuestions(remaining);
+            for (Question q : random) {
+                if (added.add(q.getId())) result.add(q);
+            }
+        }
+
+        Collections.shuffle(result);
+        return result.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    /**
      * 获取热门题目
      * 根据答题次数、独立用户数、近期活跃度、错误率加权排序
      */

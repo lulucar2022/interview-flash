@@ -70,6 +70,14 @@ public class QuestionController {
         return ApiResponse.success(question);
     }
 
+    @Operation(summary = "批量随机获取题目（智能排序）")
+    @GetMapping("/random/batch")
+    public ApiResponse<List<QuestionDTO>> getRandomQuestions(
+            @Parameter(description = "用户ID", required = true) @RequestParam Integer userId,
+            @Parameter(description = "数量") @RequestParam(defaultValue = "10") int size) {
+        return ApiResponse.success(questionService.getRandomQuestions(userId, size));
+    }
+
     @Operation(summary = "搜索题目")
     @GetMapping("/search")
     public ApiResponse<Page<QuestionDTO>> searchQuestions(
