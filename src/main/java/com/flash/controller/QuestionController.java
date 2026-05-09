@@ -74,8 +74,13 @@ public class QuestionController {
     @GetMapping("/random/batch")
     public ApiResponse<List<QuestionDTO>> getRandomQuestions(
             @Parameter(description = "用户ID", required = true) @RequestParam Integer userId,
-            @Parameter(description = "数量") @RequestParam(defaultValue = "10") int size) {
-        return ApiResponse.success(questionService.getRandomQuestions(userId, size));
+            @Parameter(description = "数量") @RequestParam(defaultValue = "10") int size,
+            @Parameter(description = "分类ID") @RequestParam(required = false) Long categoryId,
+            @Parameter(description = "题型") @RequestParam(required = false) String type,
+            @Parameter(description = "难度") @RequestParam(required = false) String difficulty) {
+        Question.QuestionType questionType = type != null ? Question.QuestionType.valueOf(type) : null;
+        Question.Difficulty diff = difficulty != null ? Question.Difficulty.valueOf(difficulty) : null;
+        return ApiResponse.success(questionService.getRandomQuestions(userId, size, categoryId, questionType, diff));
     }
 
     @Operation(summary = "搜索题目")

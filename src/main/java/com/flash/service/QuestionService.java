@@ -41,34 +41,48 @@ public class QuestionService {
      * 获取随机题目列表（智能算法）
      * 优先返回未练习的题目，其次为错题，再补全随机题
      */
-    public List<QuestionDTO> getRandomQuestions(Integer userId, int size) {
+    public List<QuestionDTO> getRandomQuestions(Integer userId, int size,
+            Long categoryId, Question.QuestionType type, Question.Difficulty difficulty) {
+        
+        List<Question> pool = getFilteredQuestions(categoryId, type, difficulty);
+        if (pool.isEmpty()) return List.of();
+
+        Set<Long> practiced = userProgressRepository.findByUserId(userId).stream()
+                .map(up -> up.getQuestion().getId()).collect(Collectors.toSet());
+        Set<Long> wrongSet = userProgressRepository.findWrongQuestionsByUserId(userId).stream()
+                .map(up -> up.getQuestion().getId()).collect(Collectors.toSet());
+
+        List<Question> unpracticed = new ArrayList<>();
+        List<Question> wrong = new ArrayList<>();
+        List<Question> rest = new ArrayList<>();
+
+        for (Question q : pool) {
+            if (!practiced.contains(q.getId())) {
+                unpracticed.add(q);
+            } else if (wrongSet.contains(q.getId())) {
+                wrong.add(q);
+            } else {
+                rest.add(q);
+            }
+        }
+
+        Collections.shuffle(unpracticed);
+        Collections.shuffle(wrong);
+        Collections.shuffle(rest);
+
         List<Question> result = new ArrayList<>();
-        Set<Long> added = new HashSet<>();
+        for (Question q : unpracticed) { if (result.size() >= size) break; result.add(q); }
+        for (Question q : wrong) { if (result.size() >= size) break; result.add(q); }
+        for (Question q : rest) { if (result.size() >= size) break; result.add(q); }
 
-        int half = size / 2;
-        List<Question> unpracticed = questionRepository.findRandomUnpracticedQuestions(userId, half);
-        for (Question q : unpracticed) {
-            if (added.add(q.getId())) result.add(q);
-        }
-
-        int remaining = size - result.size();
-        if (remaining > 0) {
-            List<Question> wrong = questionRepository.findRandomWrongQuestions(userId, remaining);
-            for (Question q : wrong) {
-                if (added.add(q.getId())) result.add(q);
-            }
-        }
-
-        remaining = size - result.size();
-        if (remaining > 0) {
-            List<Question> random = questionRepository.findRandomQuestions(remaining);
-            for (Question q : random) {
-                if (added.add(q.getId())) result.add(q);
-            }
-        }
-
-        Collections.shuffle(result);
         return result.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    private List<Question> getFilteredQuestions(Long categoryId, Question.QuestionType type, Question.Difficulty difficulty) {
+        if (categoryId != null || type != null || difficulty != null) {
+            return questionRepository.filterQuestions(categoryId, type, difficulty);
+        }
+        return questionRepository.findAll();
     }
 
     /**
