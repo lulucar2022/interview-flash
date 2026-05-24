@@ -24,14 +24,14 @@ public class UserProgressController {
     @Operation(summary = "获取用户所有进度")
     @GetMapping
     public ApiResponse<List<UserProgressDTO>> getUserProgress(
-            @Parameter(description = "用户ID", required = true) @RequestParam Integer userId) {
+            @Parameter(description = "用户ID", required = true) @RequestParam Long userId) {
         return ApiResponse.success(userProgressService.getUserProgress(userId));
     }
 
     @Operation(summary = "获取指定题目的进度")
     @GetMapping("/question")
     public ApiResponse<UserProgressDTO> getProgressByQuestion(
-            @Parameter(description = "用户ID") @RequestParam Integer userId,
+            @Parameter(description = "用户ID") @RequestParam Long userId,
             @Parameter(description = "题目ID") @RequestParam Long questionId) {
         UserProgressDTO progress = userProgressService.getProgressByQuestion(userId, questionId);
         return ApiResponse.success(progress);
@@ -40,28 +40,28 @@ public class UserProgressController {
     @Operation(summary = "获取用户的错题列表")
     @GetMapping("/wrong")
     public ApiResponse<List<UserProgressDTO>> getWrongQuestions(
-            @Parameter(description = "用户ID") @RequestParam Integer userId) {
+            @Parameter(description = "用户ID") @RequestParam Long userId) {
         return ApiResponse.success(userProgressService.getWrongQuestions(userId));
     }
 
     @Operation(summary = "获取用户收藏")
     @GetMapping("/favorites")
     public ApiResponse<List<UserProgressDTO>> getFavorites(
-            @Parameter(description = "用户ID") @RequestParam Integer userId) {
+            @Parameter(description = "用户ID") @RequestParam Long userId) {
         return ApiResponse.success(userProgressService.getFavorites(userId));
     }
 
     @Operation(summary = "获取用户统计信息")
     @GetMapping("/statistics")
     public ApiResponse<Map<String, Object>> getStatistics(
-            @Parameter(description = "用户ID") @RequestParam Integer userId) {
+            @Parameter(description = "用户ID") @RequestParam Long userId) {
         return ApiResponse.success(userProgressService.getStatistics(userId));
     }
 
     @Operation(summary = "更新学习进度")
     @PostMapping
     public ApiResponse<UserProgressDTO> updateProgress(
-            @Parameter(description = "用户ID") @RequestParam Integer userId,
+            @Parameter(description = "用户ID") @RequestParam Long userId,
             @Valid @RequestBody UpdateProgressDTO dto) {
         return ApiResponse.success("更新成功", userProgressService.updateProgress(userId, dto));
     }
@@ -69,7 +69,7 @@ public class UserProgressController {
     @Operation(summary = "重置题目进度")
     @DeleteMapping("/reset")
     public ApiResponse<Void> resetProgress(
-            @Parameter(description = "用户ID") @RequestParam Integer userId,
+            @Parameter(description = "用户ID") @RequestParam Long userId,
             @Parameter(description = "题目ID") @RequestParam Long questionId) {
         userProgressService.resetProgress(userId, questionId);
         return ApiResponse.success("重置成功", null);

@@ -8,7 +8,7 @@ public class UserProgressDTO {
     private Long id;
     private Long questionId;
     private String questionTitle;
-    private Integer userId;
+    private Long userId;
     private String status;
     private Boolean isCorrect;
     private Boolean isFavorite;

@@ -34,7 +34,7 @@ public class UserProgressService {
      * @param userId 用户ID
      * @return 进度DTO列表
      */
-    public List<UserProgressDTO> getUserProgress(Integer userId) {
+    public List<UserProgressDTO> getUserProgress(Long userId) {
         return userProgressRepository.findByUserId(userId).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -47,7 +47,7 @@ public class UserProgressService {
      * @param questionId 题目ID
      * @return 进度DTO，如果不存在则返回null
      */
-    public UserProgressDTO getProgressByQuestion(Integer userId, Long questionId) {
+    public UserProgressDTO getProgressByQuestion(Long userId, Long questionId) {
         return userProgressRepository.findByQuestionIdAndUserId(questionId, userId)
                 .map(this::convertToDTO)
                 .orElse(null);
@@ -59,7 +59,7 @@ public class UserProgressService {
      * @param userId 用户ID
      * @return 错题列表
      */
-    public List<UserProgressDTO> getWrongQuestions(Integer userId) {
+    public List<UserProgressDTO> getWrongQuestions(Long userId) {
         return userProgressRepository.findWrongQuestionsByUserId(userId).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -71,7 +71,7 @@ public class UserProgressService {
      * @param userId 用户ID
      * @return 收藏列表
      */
-    public List<UserProgressDTO> getFavorites(Integer userId) {
+    public List<UserProgressDTO> getFavorites(Long userId) {
         return userProgressRepository.findFavoritesByUserId(userId).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -83,7 +83,7 @@ public class UserProgressService {
      * @param userId 用户ID
      * @return 统计数据Map
      */
-    public Map<String, Object> getStatistics(Integer userId) {
+    public Map<String, Object> getStatistics(Long userId) {
         Map<String, Object> stats = new HashMap<>();
         
         // 统计各状态的数量
@@ -112,7 +112,7 @@ public class UserProgressService {
      * @return 更新后的进度DTO
      */
     @Transactional
-    public UserProgressDTO updateProgress(Integer userId, UpdateProgressDTO dto) {
+    public UserProgressDTO updateProgress(Long userId, UpdateProgressDTO dto) {
         // 1. 先查询题目是否存在
         Question question = questionRepository.findById(dto.getQuestionId())
                 .orElseThrow(() -> BusinessException.notFound("题目不存在"));
@@ -161,7 +161,7 @@ public class UserProgressService {
      * @param questionId 题目ID
      */
     @Transactional
-    public void resetProgress(Integer userId, Long questionId) {
+    public void resetProgress(Long userId, Long questionId) {
         UserProgress progress = userProgressRepository.findByQuestionIdAndUserId(questionId, userId)
                 .orElseThrow(() -> BusinessException.notFound("学习记录不存在"));
         

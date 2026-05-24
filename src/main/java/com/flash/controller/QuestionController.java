@@ -73,7 +73,7 @@ public class QuestionController {
     @Operation(summary = "批量随机获取题目（智能排序）")
     @GetMapping("/random/batch")
     public ApiResponse<List<QuestionDTO>> getRandomQuestions(
-            @Parameter(description = "用户ID", required = true) @RequestParam Integer userId,
+            @Parameter(description = "用户ID", required = true) @RequestParam Long userId,
             @Parameter(description = "数量") @RequestParam(defaultValue = "10") int size,
             @Parameter(description = "分类ID") @RequestParam(required = false) Long categoryId,
             @Parameter(description = "题型") @RequestParam(required = false) String type,

@@ -11,22 +11,22 @@ import java.util.Optional;
 @Repository
 public interface UserProgressRepository extends JpaRepository<UserProgress, Long> {
     
-    Optional<UserProgress> findByQuestionIdAndUserId(Long questionId, Integer userId);
+    Optional<UserProgress> findByQuestionIdAndUserId(Long questionId, Long userId);
     
-    List<UserProgress> findByUserId(Integer userId);
+    List<UserProgress> findByUserId(Long userId);
     
     @Query("SELECT up FROM UserProgress up WHERE up.userId = :userId AND up.status = :status")
-    List<UserProgress> findByUserIdAndStatus(@Param("userId") Integer userId, @Param("status") UserProgress.Status status);
+    List<UserProgress> findByUserIdAndStatus(@Param("userId") Long userId, @Param("status") UserProgress.Status status);
     
     @Query("SELECT up FROM UserProgress up WHERE up.userId = :userId AND up.isFavorite = true")
-    List<UserProgress> findFavoritesByUserId(@Param("userId") Integer userId);
+    List<UserProgress> findFavoritesByUserId(@Param("userId") Long userId);
     
     @Query("SELECT up FROM UserProgress up WHERE up.userId = :userId AND up.isCorrect = false")
-    List<UserProgress> findWrongQuestionsByUserId(@Param("userId") Integer userId);
+    List<UserProgress> findWrongQuestionsByUserId(@Param("userId") Long userId);
     
-    long countByUserIdAndStatus(Integer userId, UserProgress.Status status);
+    long countByUserIdAndStatus(Long userId, UserProgress.Status status);
     
-    long countByUserIdAndIsCorrect(Integer userId, Boolean isCorrect);
+    long countByUserIdAndIsCorrect(Long userId, Boolean isCorrect);
 
     @Query(value = """
         SELECT

@@ -41,7 +41,7 @@ public class QuestionService {
      * 获取随机题目列表（智能算法）
      * 优先返回未练习的题目，其次为错题，再补全随机题
      */
-    public List<QuestionDTO> getRandomQuestions(Integer userId, int size,
+    public List<QuestionDTO> getRandomQuestions(Long userId, int size,
             Long categoryId, Question.QuestionType type, Question.Difficulty difficulty) {
         
         List<Question> pool = getFilteredQuestions(categoryId, type, difficulty);
