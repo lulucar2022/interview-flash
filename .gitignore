@@ -84,3 +84,5 @@ docker-compose.override.yml
 hs_err_pid*
 jvm.cfg
 target/
+D:/
+init.gradle
