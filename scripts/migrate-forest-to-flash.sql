@@ -1,0 +1,20 @@
+-- One-time migration: extract forest's MySQL data and insert into merged PG schema
+-- 
+-- Prerequisites:
+-- 1. Export forest MySQL data as INSERT statements to forest_data.sql
+-- 2. Run this script against the interview_flash PostgreSQL database
+-- 3. Roles must already exist (seeded by Flyway V1)
+--
+-- Usage:
+--   psql -U postgres -d interview_flash -f scripts/migrate-forest-to-flash.sql
+
+-- Migrate users (forest.user -> flash.users)
+-- NOTE: forest stores password differently; manual password migration may be needed
+-- INSERT INTO users (username, email, password, nickname, avatar_url, bio, enabled, role_id)
+-- SELECT u.user_name, u.email, u.password, u.nick_name, u.avatar_url, u.bio, 1, 2
+-- FROM forest_export.users u;
+-- 
+-- Example (uncomment and adapt after export):
+-- INSERT INTO users (username, email, password, nickname, avatar_url, bio, enabled, role_id)
+-- VALUES
+--   ('user1', 'user1@example.com', '$2a$10$...', 'User1', NULL, 'Bio here', TRUE, 2);
