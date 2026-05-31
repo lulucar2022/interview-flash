@@ -1,0 +1,21 @@
+package com.flash.common.converter;
+
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
+
+/**
+ * JPA 转换器：PostgreSQL JSONB ↔ Java String
+ */
+@Converter
+public class JsonbConverter implements AttributeConverter<String, String> {
+
+    @Override
+    public String convertToDatabaseColumn(String attribute) {
+        return attribute;
+    }
+
+    @Override
+    public String convertToEntityAttribute(String dbData) {
+        return dbData;
+    }
+}

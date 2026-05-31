@@ -22,7 +22,7 @@ public class Question extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String answer;
 
-    @Column(columnDefinition = "JSONB")
+    @Column(columnDefinition = "TEXT")
     private String options;
 
     @ManyToOne(fetch = FetchType.LAZY)
