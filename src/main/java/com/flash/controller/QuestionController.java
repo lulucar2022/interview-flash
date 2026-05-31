@@ -1,5 +1,6 @@
 package com.flash.controller;
 
+import com.flash.auth.jwt.CustomUserDetails;
 import com.flash.dto.ApiResponse;
 import com.flash.dto.CreateQuestionDTO;
 import com.flash.dto.QuestionDTO;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
@@ -70,17 +72,16 @@ public class QuestionController {
         return ApiResponse.success(question);
     }
 
-    @Operation(summary = "批量随机获取题目（智能排序）")
     @GetMapping("/random/batch")
     public ApiResponse<List<QuestionDTO>> getRandomQuestions(
-            @Parameter(description = "用户ID", required = true) @RequestParam Long userId,
-            @Parameter(description = "数量") @RequestParam(defaultValue = "10") int size,
-            @Parameter(description = "分类ID") @RequestParam(required = false) Long categoryId,
-            @Parameter(description = "题型") @RequestParam(required = false) String type,
-            @Parameter(description = "难度") @RequestParam(required = false) String difficulty) {
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String difficulty) {
         Question.QuestionType questionType = type != null ? Question.QuestionType.valueOf(type) : null;
         Question.Difficulty diff = difficulty != null ? Question.Difficulty.valueOf(difficulty) : null;
-        return ApiResponse.success(questionService.getRandomQuestions(userId, size, categoryId, questionType, diff));
+        return ApiResponse.success(questionService.getRandomQuestions(userDetails.getId(), size, categoryId, questionType, diff));
     }
 
     @Operation(summary = "搜索题目")
