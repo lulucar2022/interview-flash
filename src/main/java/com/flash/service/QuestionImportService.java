@@ -213,28 +213,86 @@ public class QuestionImportService {
     public byte[] generateTemplate() {
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("题库导入模板");
-            // 顶部说明行
+
+            // ── 样式 ──
+            CellStyle headerStyle = workbook.createCellStyle();
+            Font headerFont = workbook.createFont();
+            headerFont.setBold(true);
+            headerFont.setFontHeightInPoints((short) 11);
+            headerStyle.setFont(headerFont);
+            headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+            CellStyle hintStyle = workbook.createCellStyle();
+            Font hintFont = workbook.createFont();
+            hintFont.setItalic(true);
+            hintFont.setFontHeightInPoints((short) 10);
+            hintStyle.setFont(hintFont);
+            hintStyle.setFillForegroundColor(IndexedColors.LEMON_CHIFFON.getIndex());
+            hintStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+            CellStyle normalStyle = workbook.createCellStyle();
+            normalStyle.setWrapText(true);
+
+            String[] headers = {"title", "content", "answer", "type", "difficulty", "categoryName", "options"};
+            String[] hints = {
+                "题目标签（必填，≤500字）",
+                "题干内容（必填）",
+                "参考答案（选填）",
+                "题型枚举：SINGLE_CHOICE, MULTIPLE_CHOICE,\nTRUE_FALSE, FILL_BLANK, SHORT_ANSWER,\nCODING, SCENARIO",
+                "难度枚举：EASY, MEDIUM, HARD",
+                "分类名称（需与系统中已有\n分类完全匹配）",
+                "选项JSON（单选/多选/判断必填）\n格式: [{\"label\":\"A\",\"content\":\"...\"}]"
+            };
+
+            // 7 种题型示例数据
+            Object[][] samples = {
+                {"什么是Java多态", "请解释Java多态的概念和实现方式", "多态是指同一个行为...", "SHORT_ANSWER", "MEDIUM", "Java基础", ""},
+                {"下面哪个是Java关键字", "A.public  B.main  C.printf  D.scan", "A", "SINGLE_CHOICE", "EASY", "Java基础", "[{\"label\":\"A\",\"content\":\"public\"},{\"label\":\"B\",\"content\":\"main\"},{\"label\":\"C\",\"content\":\"printf\"},{\"label\":\"D\",\"content\":\"scan\"}]"},
+                {"哪些是关系型数据库", "A.MySQL  B.Redis  C.PostgreSQL  D.MongoDB", "A,C", "MULTIPLE_CHOICE", "MEDIUM", "数据库", "[{\"label\":\"A\",\"content\":\"MySQL\"},{\"label\":\"B\",\"content\":\"Redis\"},{\"label\":\"C\",\"content\":\"PostgreSQL\"},{\"label\":\"D\",\"content\":\"MongoDB\"}]"},
+                {"Spring Boot 自动配置默认开启", "Spring Boot 的自动配置默认是启用的", "正确", "TRUE_FALSE", "EASY", "Spring框架", "[{\"label\":\"A\",\"content\":\"正确\"},{\"label\":\"B\",\"content\":\"错误\"}]"},
+                {"HashMap 默认初始容量", "HashMap 默认初始容量为____", "16", "FILL_BLANK", "MEDIUM", "Java基础", ""},
+                {"反转单链表", "实现反转单链表的函数", "public ListNode ...", "CODING", "HARD", "算法与数据结构", ""},
+                {"设计秒杀系统", "请设计一个高并发秒杀系统的架构", "1. 前端限流 2. ...", "SCENARIO", "HARD", "系统设计", ""}
+            };
+
+            // ── 第 0 行：标题行 ──
             Row header = sheet.createRow(0);
-            for (int i = 0; i < TEMPLATE_HEADERS.length; i++) {
+            for (int i = 0; i < headers.length; i++) {
                 Cell cell = header.createCell(i);
-                cell.setCellValue(TEMPLATE_HEADERS[i]);
-                CellStyle style = workbook.createCellStyle();
-                Font font = workbook.createFont();
-                font.setBold(true);
-                style.setFont(font);
-                cell.setCellStyle(style);
-                sheet.autoSizeColumn(i);
+                cell.setCellValue(headers[i]);
+                cell.setCellStyle(headerStyle);
             }
 
-            // 示例行
-            Row sample = sheet.createRow(1);
-            sample.createCell(0).setCellValue("HashMap 底层原理");
-            sample.createCell(1).setCellValue("请解释 HashMap 的 put 流程");
-            sample.createCell(2).setCellValue("1. 计算 hash\n2. 定位桶\n3. 插入/更新");
-            sample.createCell(3).setCellValue("SHORT_ANSWER");
-            sample.createCell(4).setCellValue("MEDIUM");
-            sample.createCell(5).setCellValue("Java基础");
-            sample.createCell(6).setCellValue("[{\"label\":\"A\",\"content\":\"选项A\"}]");
+            // ── 第 1 行：备注说明行 ──
+            Row hintRow = sheet.createRow(1);
+            for (int i = 0; i < hints.length; i++) {
+                Cell cell = hintRow.createCell(i);
+                cell.setCellValue(hints[i]);
+                cell.setCellStyle(hintStyle);
+            }
+
+            // ── 第 2~8 行：7 种题型示例 ──
+            for (int r = 0; r < samples.length; r++) {
+                Row row = sheet.createRow(r + 2);
+                for (int c = 0; c < samples[r].length; c++) {
+                    Cell cell = row.createCell(c);
+                    Object val = samples[r][c];
+                    cell.setCellValue(val != null ? val.toString() : "");
+                    cell.setCellStyle(normalStyle);
+                }
+            }
+
+            // ── 列宽 ──
+            int[] colWidths = {30, 40, 30, 20, 14, 18, 40};
+            for (int i = 0; i < colWidths.length; i++) {
+                sheet.setColumnWidth(i, colWidths[i] * 256);
+            }
+            // 备注行和样例行设置行高（支持多行显示）
+            hintRow.setHeight((short) (hintRow.getHeight() * 6));
+            for (int r = 2; r < 2 + samples.length; r++) {
+                sheet.getRow(r).setHeight((short) (sheet.getRow(r).getHeight() * 3));
+            }
 
             java.io.ByteArrayOutputStream bos = new java.io.ByteArrayOutputStream();
             workbook.write(bos);
