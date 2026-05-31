@@ -137,6 +137,12 @@ public class QuestionImportService {
     }
 
     private Question buildQuestion(QuestionsImportRow row) {
+        if (row.title == null || row.title.trim().isEmpty()) {
+            throw new RuntimeException("题目标题不能为空");
+        }
+        if (row.content == null || row.content.trim().isEmpty()) {
+            throw new RuntimeException("题目内容不能为空");
+        }
         if (row.category == null) {
             throw new RuntimeException("分类不存在: " + row.categoryName);
         }
