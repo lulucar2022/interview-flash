@@ -3,10 +3,8 @@ package com.flash.controller;
 import com.flash.auth.jwt.CustomUserDetails;
 import com.flash.dto.ApiResponse;
 import com.flash.dto.CreateQuestionDTO;
-import com.flash.dto.ImportResult;
 import com.flash.dto.QuestionDTO;
 import com.flash.entity.Question;
-import com.flash.service.QuestionImportService;
 import com.flash.service.QuestionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,8 +17,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.http.*;
 
 @RestController
 @RequestMapping("/api/questions")
@@ -29,7 +25,6 @@ import org.springframework.http.*;
 public class QuestionController {
 
     private final QuestionService questionService;
-    private final QuestionImportService questionImportService;
 
     @Operation(summary = "获取题目总数")
     @GetMapping("/count")
@@ -125,20 +120,5 @@ public class QuestionController {
     public ApiResponse<Void> deleteQuestion(@PathVariable Long id) {
         questionService.deleteQuestion(id);
         return ApiResponse.success("删除成功", null);
-    }
-
-    @PostMapping("/import")
-    public ApiResponse<ImportResult> importQuestions(@RequestParam("file") MultipartFile file) {
-        ImportResult result = questionImportService.importFile(file);
-        return ApiResponse.success("导入完成: 成功 " + result.getSuccess() + " 条, 失败 " + result.getFail() + " 条", result);
-    }
-
-    @GetMapping("/import/template")
-    public ResponseEntity<byte[]> downloadTemplate() {
-        byte[] data = questionImportService.generateTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        headers.setContentDisposition(ContentDisposition.attachment().filename("questions-template.xlsx").build());
-        return new ResponseEntity<>(data, headers, HttpStatus.OK);
     }
 }
