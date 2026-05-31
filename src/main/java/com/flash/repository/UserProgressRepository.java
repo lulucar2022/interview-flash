@@ -28,6 +28,23 @@ public interface UserProgressRepository extends JpaRepository<UserProgress, Long
     
     long countByUserIdAndIsCorrect(Long userId, Boolean isCorrect);
 
+    /** 按日期聚合：每日答题数 + 正确数 */
+    @Query("SELECT CAST(up.lastReviewedAt AS date), COUNT(up), " +
+           "SUM(CASE WHEN up.isCorrect = true THEN 1 ELSE 0 END) " +
+           "FROM UserProgress up " +
+           "WHERE up.userId = :userId AND up.lastReviewedAt >= :since " +
+           "GROUP BY CAST(up.lastReviewedAt AS date) " +
+           "ORDER BY CAST(up.lastReviewedAt AS date)")
+    List<Object[]> findDailyStats(@Param("userId") Long userId, @Param("since") java.time.LocalDateTime since);
+
+    /** 按分类聚合：分类名 + 题目数 + 掌握数 */
+    @Query("SELECT c.name, COUNT(up), " +
+           "SUM(CASE WHEN up.status = 'MASTERED' THEN 1 ELSE 0 END) " +
+           "FROM UserProgress up JOIN up.question q JOIN q.category c " +
+           "WHERE up.userId = :userId " +
+           "GROUP BY c.id, c.name")
+    List<Object[]> findCategoryStats(@Param("userId") Long userId);
+
     @Query(value = """
         SELECT
             up.question_id,

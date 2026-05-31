@@ -18,7 +18,10 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     @Query("SELECT a FROM Article a WHERE a.status = 'PUBLISHED' ORDER BY a.viewCount DESC")
     Page<Article> findHotArticles(Pageable pageable);
 
-    @Query("SELECT a FROM Article a WHERE a.status = 'PUBLISHED' AND "
-         + "to_tsvector('simple', a.title || ' ' || a.content) @@ plainto_tsquery('simple', :keyword)")
+    @Query(value = "SELECT * FROM articles a WHERE a.status = 'PUBLISHED' AND "
+         + "to_tsvector('simple', a.title || ' ' || a.content) @@ plainto_tsquery('simple', :keyword)",
+         countQuery = "SELECT count(*) FROM articles a WHERE a.status = 'PUBLISHED' AND "
+         + "to_tsvector('simple', a.title || ' ' || a.content) @@ plainto_tsquery('simple', :keyword)",
+         nativeQuery = true)
     Page<Article> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
 }

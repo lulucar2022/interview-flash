@@ -4,7 +4,7 @@ import com.flash.dto.CreateUserDTO;
 import com.flash.dto.UserDTO;
 import com.flash.entity.User;
 import com.flash.exception.BusinessException;
-import com.flash.repository.UserRepository;
+import com.flash.repository.OldUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true) // 默认事务只读，提升性能
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final OldUserRepository userRepository;
 
     /**
      * 根据ID查询用户
