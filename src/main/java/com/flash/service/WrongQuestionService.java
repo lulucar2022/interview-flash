@@ -3,7 +3,7 @@ package com.flash.service;
 import com.flash.dto.WrongQuestionDTO;
 import com.flash.entity.Question;
 import com.flash.entity.WrongQuestion;
-import com.flash.exception.BusinessException;
+import com.flash.common.exception.BusinessException;
 import com.flash.repository.QuestionRepository;
 import com.flash.repository.WrongQuestionRepository;
 import lombok.RequiredArgsConstructor;

@@ -30,4 +30,19 @@ public class AuthController {
     public ApiResponse<UserDTO> me(@AuthenticationPrincipal CustomUserDetails userDetails) {
         return ApiResponse.success(authService.getCurrentUser(userDetails.getId()));
     }
+
+    @PutMapping("/profile")
+    public ApiResponse<UserDTO> updateProfile(
+            @RequestBody UpdateProfileRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ApiResponse.success(authService.updateProfile(userDetails.getId(), request));
+    }
+
+    @PutMapping("/password")
+    public ApiResponse<Void> changePassword(
+            @Valid @RequestBody ChangePasswordRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        authService.changePassword(userDetails.getId(), request);
+        return ApiResponse.success();
+    }
 }

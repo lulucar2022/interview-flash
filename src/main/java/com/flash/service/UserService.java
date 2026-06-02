@@ -3,7 +3,7 @@ package com.flash.service;
 import com.flash.dto.CreateUserDTO;
 import com.flash.dto.UserDTO;
 import com.flash.entity.User;
-import com.flash.exception.BusinessException;
+import com.flash.common.exception.BusinessException;
 import com.flash.repository.OldUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

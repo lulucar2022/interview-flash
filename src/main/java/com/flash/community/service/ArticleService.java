@@ -37,8 +37,9 @@ public class ArticleService {
     public Article getArticle(Long id) {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new BusinessException("文章不存在"));
+        articleRepository.incrementViewCount(id);
         article.setViewCount(article.getViewCount() + 1);
-        return articleRepository.save(article);
+        return article;
     }
 
     @Transactional

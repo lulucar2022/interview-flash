@@ -1,6 +1,6 @@
 package com.flash.controller;
 
-import com.flash.dto.ApiResponse;
+import com.flash.common.dto.ApiResponse;
 import com.flash.dto.CreateUserDTO;
 import com.flash.dto.UserDTO;
 import com.flash.service.UserService;

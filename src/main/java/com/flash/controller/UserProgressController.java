@@ -1,7 +1,7 @@
 package com.flash.controller;
 
 import com.flash.auth.jwt.CustomUserDetails;
-import com.flash.dto.ApiResponse;
+import com.flash.common.dto.ApiResponse;
 import com.flash.dto.UpdateProgressDTO;
 import com.flash.dto.UserProgressDTO;
 import com.flash.service.UserProgressService;

@@ -4,8 +4,10 @@ import com.flash.community.entity.Article;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface ArticleRepository extends JpaRepository<Article, Long> {
 
@@ -24,4 +26,9 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
          + "to_tsvector('simple', a.title || ' ' || a.content) @@ plainto_tsquery('simple', :keyword)",
          nativeQuery = true)
     Page<Article> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Article a SET a.viewCount = a.viewCount + 1 WHERE a.id = :id")
+    void incrementViewCount(@Param("id") Long id);
 }

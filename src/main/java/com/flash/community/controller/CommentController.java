@@ -2,8 +2,10 @@ package com.flash.community.controller;
 
 import com.flash.auth.jwt.CustomUserDetails;
 import com.flash.common.dto.ApiResponse;
+import com.flash.community.dto.CommentCreateRequest;
 import com.flash.community.entity.Comment;
 import com.flash.community.service.CommentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -24,10 +26,10 @@ public class CommentController {
     @PostMapping
     public ApiResponse<Comment> create(
             @PathVariable Long articleId,
-            @RequestParam String content,
-            @RequestParam(required = false) Long parentId,
+            @Valid @RequestBody CommentCreateRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ApiResponse.success(
-            commentService.createComment(content, articleId, userDetails.getId(), parentId));
+            commentService.createComment(request.getContent(), articleId,
+                userDetails.getId(), request.getParentId()));
     }
 }

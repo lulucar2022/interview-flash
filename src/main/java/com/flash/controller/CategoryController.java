@@ -1,6 +1,6 @@
 package com.flash.controller;
 
-import com.flash.dto.ApiResponse;
+import com.flash.common.dto.ApiResponse;
 import com.flash.dto.CategoryDTO;
 import com.flash.dto.CreateCategoryDTO;
 import com.flash.service.CategoryService;

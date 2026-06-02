@@ -2,7 +2,7 @@ package com.flash.service;
 
 import com.flash.entity.Category;
 import com.flash.entity.Question;
-import com.flash.exception.BusinessException;
+import com.flash.common.exception.BusinessException;
 import com.flash.repository.CategoryRepository;
 import com.flash.repository.QuestionRepository;
 import com.flash.repository.UserProgressRepository;

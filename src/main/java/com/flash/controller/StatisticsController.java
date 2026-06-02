@@ -1,7 +1,7 @@
 package com.flash.controller;
 
 import com.flash.auth.jwt.CustomUserDetails;
-import com.flash.dto.ApiResponse;
+import com.flash.common.dto.ApiResponse;
 import com.flash.service.StatisticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

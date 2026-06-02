@@ -1,0 +1,9 @@
+[
+  {"title":"测试-简答题","content":"简答题内容","answer":"简答答案","type":"SHORT_ANSWER","difficulty":"EASY","categoryName":"Java基础"},
+  {"title":"测试-单选题","content":"单选题内容","answer":"A","type":"SINGLE_CHOICE","difficulty":"EASY","categoryName":"Java基础","options":"[{\"label\":\"A\",\"content\":\"选项A\"},{\"label\":\"B\",\"content\":\"选项B\"}]"},
+  {"title":"测试-多选题","content":"多选题内容","answer":"A,B","type":"MULTIPLE_CHOICE","difficulty":"MEDIUM","categoryName":"数据库","options":"[{\"label\":\"A\",\"content\":\"MySQL\"},{\"label\":\"B\",\"content\":\"Redis\"}]"},
+  {"title":"测试-判断题","content":"判断题内容","answer":"正确","type":"TRUE_FALSE","difficulty":"EASY","categoryName":"Spring框架","options":"[{\"label\":\"A\",\"content\":\"正确\"},{\"label\":\"B\",\"content\":\"错误\"}]"},
+  {"title":"测试-填空题","content":"填空题内容","answer":"16","type":"FILL_BLANK","difficulty":"MEDIUM","categoryName":"Java基础"},
+  {"title":"测试-编程题","content":"编程题内容","answer":"public class Main {}","type":"CODING","difficulty":"HARD","categoryName":"算法与数据结构"},
+  {"title":"测试-情景题","content":"情景题内容","answer":"架构设计...","type":"SCENARIO","difficulty":"HARD","categoryName":"系统设计"}
+]

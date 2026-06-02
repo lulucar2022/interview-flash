@@ -1,15 +1,13 @@
 package com.flash.controller;
 
 import com.flash.auth.jwt.CustomUserDetails;
-import com.flash.dto.ApiResponse;
-import com.flash.dto.CreateQuestionDTO;
+import com.flash.common.dto.ApiResponse;
 import com.flash.dto.QuestionDTO;
 import com.flash.entity.Question;
 import com.flash.service.QuestionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -21,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/questions")
 @RequiredArgsConstructor
-@Tag(name = "题目管理", description = "题目相关接口")
+@Tag(name = "题目查询", description = "题目查询和随机获取接口")
 public class QuestionController {
 
     private final QuestionService questionService;
@@ -102,23 +100,4 @@ public class QuestionController {
         return ApiResponse.success(questionService.getQuestionById(id));
     }
 
-    @Operation(summary = "创建题目")
-    @PostMapping
-    public ApiResponse<QuestionDTO> createQuestion(@Valid @RequestBody CreateQuestionDTO dto) {
-        return ApiResponse.success("创建成功", questionService.createQuestion(dto));
-    }
-
-    @Operation(summary = "更新题目")
-    @PutMapping("/{id}")
-    public ApiResponse<QuestionDTO> updateQuestion(
-            @Parameter(description = "题目ID") @PathVariable Long id,
-            @Valid @RequestBody CreateQuestionDTO dto) {
-        return ApiResponse.success("更新成功", questionService.updateQuestion(id, dto));
-    }
-
-    @DeleteMapping("/{id}")
-    public ApiResponse<Void> deleteQuestion(@PathVariable Long id) {
-        questionService.deleteQuestion(id);
-        return ApiResponse.success("删除成功", null);
-    }
 }

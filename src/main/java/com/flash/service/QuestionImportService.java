@@ -56,29 +56,51 @@ public class QuestionImportService {
     private ImportResult importExcel(MultipartFile file) {
         ImportResult result = new ImportResult();
         Map<String, Category> categoryCache = new HashMap<>();
-        int rowCount = 0;
+        List<Question> batch = new ArrayList<>();
 
         try (InputStream is = file.getInputStream();
              Workbook workbook = new XSSFWorkbook(is)) {
 
             Sheet sheet = workbook.getSheetAt(0);
+            Row headerRow = sheet.getRow(0);
+            if (headerRow == null) {
+                result.getErrors().add("Excel 文件缺少表头行");
+                return result;
+            }
 
+            // 将表头映射到列索引，不依赖固定列顺序
+            Map<String, Integer> colIndex = new HashMap<>();
+            for (int i = 0; i <= headerRow.getLastCellNum(); i++) {
+                String h = getCellString(headerRow, i);
+                if (!h.isEmpty()) colIndex.put(h.toLowerCase(), i);
+            }
+
+            String[] requiredHeaders = {"title", "content", "type", "difficulty", "categoryName"};
+            for (String h : requiredHeaders) {
+                if (!colIndex.containsKey(h)) {
+                    result.getErrors().add("Excel 缺少必要列: " + h);
+                    return result;
+                }
+            }
+
+            int totalRows = 0;
             for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                 Row row = sheet.getRow(i);
                 if (row == null || isRowEmpty(row)) continue;
-                rowCount++;
+                int excelRowNum = i + 1; // Excel 行号（1-based）
+                totalRows++;
 
                 try {
-                    String title = getCellString(row, 0);
-                    String content = getCellString(row, 1);
-                    String answer = getCellString(row, 2);
-                    String type = getCellString(row, 3);
-                    String difficulty = getCellString(row, 4);
-                    String categoryName = getCellString(row, 5);
-                    String options = getCellString(row, 6);
+                    String title = getCellStringByIndex(row, colIndex, "title");
+                    String content = getCellStringByIndex(row, colIndex, "content");
+                    String answer = getCellStringByIndex(row, colIndex, "answer");
+                    String type = getCellStringByIndex(row, colIndex, "type");
+                    String difficulty = getCellStringByIndex(row, colIndex, "difficulty");
+                    String categoryName = getCellStringByIndex(row, colIndex, "categoryName");
+                    String options = getCellStringByIndex(row, colIndex, "options");
 
                     if (title.isEmpty() || content.isEmpty()) {
-                        result.addError(rowCount, "title 或 content 不能为空");
+                        result.addError(excelRowNum, "title 或 content 不能为空");
                         continue;
                     }
 
@@ -92,43 +114,61 @@ public class QuestionImportService {
                     importRow.options = options;
 
                     Question question = buildQuestion(importRow);
-                    questionRepository.save(question);
+                    batch.add(question);
                     result.addSuccess();
                 } catch (Exception e) {
-                    result.addError(rowCount, e.getMessage());
+                    String msg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
+                    result.addError(excelRowNum, msg);
                 }
+            }
+
+            result.setTotal(totalRows);
+            // 批量写入，大幅减少 SQL 交互次数
+            if (!batch.isEmpty()) {
+                questionRepository.saveAll(batch);
             }
 
         } catch (Exception e) {
             result.getErrors().add("Excel 解析失败: " + e.getMessage());
         }
 
-        result.setTotal(rowCount);
         return result;
+    }
+
+    private String getCellStringByIndex(Row row, Map<String, Integer> colIndex, String colName) {
+        Integer idx = colIndex.get(colName);
+        if (idx == null) return "";
+        return getCellString(row, idx);
     }
 
     private ImportResult importJson(MultipartFile file) {
         ImportResult result = new ImportResult();
         Map<String, Category> categoryCache = new HashMap<>();
+        List<Question> batch = new ArrayList<>();
 
         try {
-            List<Map<String, Object>> items = objectMapper.readValue(
+            // 直接反序列化为 QuestionsImportRow 列表，避免中间 Map + convertValue 双重转换
+            List<QuestionsImportRow> items = objectMapper.readValue(
                     file.getInputStream(), new TypeReference<>() {});
             result.setTotal(items.size());
 
             for (int i = 0; i < items.size(); i++) {
                 try {
-                    Map<String, Object> item = items.get(i);
-                    QuestionsImportRow row = objectMapper.convertValue(item, QuestionsImportRow.class);
+                    QuestionsImportRow row = items.get(i);
                     row.category = getCategoryByName(
-                            String.valueOf(item.getOrDefault("categoryName", "")), categoryCache);
+                            row.categoryName != null ? row.categoryName : "", categoryCache);
 
                     Question question = buildQuestion(row);
-                    questionRepository.save(question);
+                    batch.add(question);
                     result.addSuccess();
                 } catch (Exception e) {
-                    result.addError(i + 1, e.getMessage());
+                    String msg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
+                    result.addError(i + 1, msg);
                 }
+            }
+
+            if (!batch.isEmpty()) {
+                questionRepository.saveAll(batch);
             }
         } catch (Exception e) {
             result.getErrors().add("JSON 解析失败: " + e.getMessage());
@@ -184,7 +224,14 @@ public class QuestionImportService {
         if (cell == null) return "";
         return switch (cell.getCellType()) {
             case STRING -> cell.getStringCellValue().trim();
-            case NUMERIC -> String.valueOf((long) cell.getNumericCellValue());
+            case NUMERIC -> {
+                double val = cell.getNumericCellValue();
+                // 整数值无精度损失时输出不带小数点
+                if (val == Math.floor(val) && !Double.isInfinite(val)) {
+                    yield String.valueOf((long) val);
+                }
+                yield String.valueOf(val);
+            }
             case BOOLEAN -> String.valueOf(cell.getBooleanCellValue());
             default -> "";
         };

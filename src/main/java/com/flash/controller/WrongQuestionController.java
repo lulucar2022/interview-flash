@@ -1,7 +1,7 @@
 package com.flash.controller;
 
 import com.flash.auth.jwt.CustomUserDetails;
-import com.flash.dto.ApiResponse;
+import com.flash.common.dto.ApiResponse;
 import com.flash.dto.WrongQuestionDTO;
 import com.flash.service.WrongQuestionService;
 import lombok.RequiredArgsConstructor;

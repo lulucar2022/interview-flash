@@ -2,8 +2,10 @@ package com.flash.community.controller;
 
 import com.flash.auth.jwt.CustomUserDetails;
 import com.flash.common.dto.ApiResponse;
+import com.flash.community.dto.ArticleCreateRequest;
 import com.flash.community.entity.Article;
 import com.flash.community.service.ArticleService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -46,12 +48,10 @@ public class ArticleController {
 
     @PostMapping
     public ApiResponse<Article> create(
-            @RequestParam String title,
-            @RequestParam String content,
-            @RequestParam(required = false) Long topicId,
-            @RequestParam(required = false) String[] tags,
+            @Valid @RequestBody ArticleCreateRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ApiResponse.success(
-            articleService.createArticle(title, content, userDetails.getId(), topicId, tags));
+            articleService.createArticle(request.getTitle(), request.getContent(),
+                userDetails.getId(), request.getTopicId(), request.getTags()));
     }
 }
