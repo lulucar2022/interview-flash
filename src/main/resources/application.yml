@@ -24,16 +24,16 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: true
 
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+
 jwt:
   secret: forest-jwt-secret-key-change-in-production-environment
   expiration-ms: 86400000
 
 server:
   port: 8080
-
-  jackson:
-    serialization:
-      fail-on-empty-beans: false
 
 logging:
   level:
