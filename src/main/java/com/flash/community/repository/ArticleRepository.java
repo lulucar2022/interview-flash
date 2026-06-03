@@ -31,4 +31,12 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     @Transactional
     @Query("UPDATE Article a SET a.viewCount = a.viewCount + 1 WHERE a.id = :id")
     void incrementViewCount(@Param("id") Long id);
+
+    long countByAuthorIdAndStatus(Long authorId, Article.ArticleStatus status);
+
+    @Query("SELECT COALESCE(SUM(a.viewCount), 0) FROM Article a WHERE a.author.id = :authorId AND a.status = 'PUBLISHED'")
+    long sumViewCountByAuthorId(@Param("authorId") Long authorId);
+
+    @Query("SELECT COALESCE(SUM(a.thumbsUpCount), 0) FROM Article a WHERE a.author.id = :authorId AND a.status = 'PUBLISHED'")
+    long sumThumbsUpCountByAuthorId(@Param("authorId") Long authorId);
 }

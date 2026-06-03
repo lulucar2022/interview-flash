@@ -32,7 +32,9 @@ public class SecurityConfig {
                     "/api/auth/register",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
-                    "/api/topics"
+                    "/api/topics",
+                    "/api/users/*/profile",
+                    "/api/users/*/articles"
                 ).permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
