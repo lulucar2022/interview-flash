@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class ArticleCreateRequest {
+public class ArticleUpdateRequest {
     @NotBlank(message = "标题不能为空")
     private String title;
 
@@ -13,5 +13,4 @@ public class ArticleCreateRequest {
 
     private Long topicId;
     private String[] tags;
-    private String status = "PUBLISHED"; // PUBLISHED | DRAFT
 }
