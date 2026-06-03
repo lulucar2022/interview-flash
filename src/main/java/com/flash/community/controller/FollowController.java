@@ -34,4 +34,12 @@ public class FollowController {
     public ApiResponse<List<Follow>> following(@PathVariable Long userId) {
         return ApiResponse.success(followService.getFollowing(userId));
     }
+
+    @GetMapping("/{userId}/status")
+    public ApiResponse<Map<String, Object>> status(
+            @PathVariable Long userId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        boolean following = followService.isFollowing(userDetails.getId(), userId);
+        return ApiResponse.success(Map.of("following", following));
+    }
 }

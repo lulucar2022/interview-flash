@@ -7,9 +7,9 @@ import com.flash.community.entity.Comment;
 import com.flash.community.service.CommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/articles/{articleId}/comments")
@@ -19,8 +19,11 @@ public class CommentController {
     private final CommentService commentService;
 
     @GetMapping
-    public ApiResponse<List<Comment>> list(@PathVariable Long articleId) {
-        return ApiResponse.success(commentService.getArticleComments(articleId));
+    public ApiResponse<Page<Comment>> list(
+            @PathVariable Long articleId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        return ApiResponse.success(commentService.getArticleComments(articleId, page, size));
     }
 
     @PostMapping
