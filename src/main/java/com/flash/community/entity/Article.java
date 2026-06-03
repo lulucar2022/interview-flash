@@ -2,6 +2,7 @@ package com.flash.community.entity;
 
 import com.flash.auth.entity.User;
 import com.flash.common.entity.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,6 +39,10 @@ public class Article extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private ArticleStatus status = ArticleStatus.PUBLISHED;
+
+    @Transient
+    @JsonInclude
+    private String tags;
 
     public enum ArticleStatus {
         DRAFT, PUBLISHED, LOCKED
