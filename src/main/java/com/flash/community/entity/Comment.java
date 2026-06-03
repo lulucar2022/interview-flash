@@ -1,5 +1,6 @@
 package com.flash.community.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.flash.auth.entity.User;
 import com.flash.common.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -9,6 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "comments")
 public class Comment extends BaseEntity {
 

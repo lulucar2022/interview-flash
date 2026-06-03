@@ -31,6 +31,10 @@ jwt:
 server:
   port: 8080
 
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+
 logging:
   level:
     com.flash: DEBUG
