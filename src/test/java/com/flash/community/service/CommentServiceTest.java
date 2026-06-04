@@ -2,9 +2,12 @@ package com.flash.community.service;
 
 import com.flash.auth.entity.User;
 import com.flash.auth.repository.UserRepository;
+import com.flash.community.dto.CommentTreeDTO;
 import com.flash.community.entity.Article;
 import com.flash.community.entity.Comment;
+import com.flash.community.entity.CommentLike;
 import com.flash.community.repository.ArticleRepository;
+import com.flash.community.repository.CommentLikeRepository;
 import com.flash.community.repository.CommentRepository;
 import com.flash.common.exception.BusinessException;
 import org.junit.jupiter.api.Test;
@@ -12,9 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +28,8 @@ class CommentServiceTest {
     @Mock
     private CommentRepository commentRepository;
     @Mock
+    private CommentLikeRepository commentLikeRepository;
+    @Mock
     private ArticleRepository articleRepository;
     @Mock
     private UserRepository userRepository;
@@ -38,12 +40,50 @@ class CommentServiceTest {
     private CommentService commentService;
 
     @Test
-    void getArticleComments_returnsPage() {
-        Page<Comment> page = new PageImpl<>(List.of());
-        when(commentRepository.findByArticleIdOrderByCreatedAtAsc(eq(1L), any(Pageable.class))).thenReturn(page);
-        Page<Comment> result = commentService.getArticleComments(1L, 0, 20);
-        verify(commentRepository).findByArticleIdOrderByCreatedAtAsc(eq(1L), any(Pageable.class));
-        assertEquals(0, result.getTotalElements());
+    void getArticleComments_returnsTree() {
+        Article article = new Article();
+        article.setId(1L);
+        User author = new User();
+        author.setId(10L);
+        author.setNickname("Author");
+
+        Comment root = new Comment();
+        root.setId(1L);
+        root.setContent("Root comment");
+        root.setArticle(article);
+        root.setAuthor(author);
+        root.setLikeCount(0);
+
+        when(commentRepository.findByArticleIdAndParentIdIsNullOrderByCreatedAtAsc(1L)).thenReturn(List.of(root));
+        when(commentRepository.findByArticleIdAndParentIdIsNotNull(1L)).thenReturn(List.of());
+
+        List<CommentTreeDTO> result = commentService.getArticleComments(1L, "oldest");
+
+        assertEquals(1, result.size());
+        assertEquals("Root comment", result.get(0).getContent());
+    }
+
+    @Test
+    void getArticleComments_newestSort_usesDescOrder() {
+        Article article = new Article();
+        article.setId(1L);
+        User author = new User();
+        author.setId(10L);
+        author.setNickname("Author");
+
+        Comment root = new Comment();
+        root.setId(1L);
+        root.setContent("Root");
+        root.setArticle(article);
+        root.setAuthor(author);
+        root.setLikeCount(0);
+
+        when(commentRepository.findByArticleIdAndParentIdIsNullOrderByCreatedAtDesc(1L)).thenReturn(List.of(root));
+        when(commentRepository.findByArticleIdAndParentIdIsNotNull(1L)).thenReturn(List.of());
+
+        List<CommentTreeDTO> result = commentService.getArticleComments(1L, "newest");
+
+        assertEquals(1, result.size());
     }
 
     @Test
@@ -130,5 +170,100 @@ class CommentServiceTest {
         assertThrows(BusinessException.class,
                 () -> commentService.createComment("reply", 1L, 10L, 99L));
         verify(commentRepository, never()).save(any());
+    }
+
+    @Test
+    void updateComment_ownComment_updatesContent() {
+        User author = new User();
+        author.setId(1L);
+        Comment comment = new Comment();
+        comment.setId(1L);
+        comment.setContent("Old");
+        comment.setAuthor(author);
+
+        when(commentRepository.findById(1L)).thenReturn(Optional.of(comment));
+
+        Comment updated = new Comment();
+        updated.setId(1L);
+        updated.setContent("New");
+        updated.setAuthor(author);
+        when(commentRepository.save(any(Comment.class))).thenReturn(updated);
+
+        Comment result = commentService.updateComment(1L, 1L, "New");
+
+        assertEquals("New", result.getContent());
+    }
+
+    @Test
+    void updateComment_notOwner_throwsException() {
+        User owner = new User();
+        owner.setId(10L);
+        Comment comment = new Comment();
+        comment.setId(1L);
+        comment.setAuthor(owner);
+
+        when(commentRepository.findById(1L)).thenReturn(Optional.of(comment));
+
+        assertThrows(BusinessException.class,
+                () -> commentService.updateComment(1L, 99L, "New"));
+    }
+
+    @Test
+    void deleteComment_ownComment_deletes() {
+        User author = new User();
+        author.setId(1L);
+        Article article = new Article();
+        article.setId(1L);
+        article.setCommentCount(3);
+        Comment comment = new Comment();
+        comment.setId(1L);
+        comment.setAuthor(author);
+        comment.setArticle(article);
+
+        when(commentRepository.findById(1L)).thenReturn(Optional.of(comment));
+        when(commentRepository.findByParentIdOrderByCreatedAtAsc(1L)).thenReturn(List.of());
+
+        commentService.deleteComment(1L, 1L);
+
+        verify(commentRepository).delete(comment);
+        assertEquals(2, article.getCommentCount());
+    }
+
+    @Test
+    void toggleLike_addsLike() {
+        Comment comment = new Comment();
+        comment.setId(1L);
+        comment.setLikeCount(0);
+        User author = new User();
+        author.setId(10L);
+        comment.setAuthor(author);
+
+        when(commentRepository.findById(1L)).thenReturn(Optional.of(comment));
+        when(commentLikeRepository.findByCommentIdAndUserId(1L, 1L)).thenReturn(Optional.empty());
+
+        boolean result = commentService.toggleLike(1L, 1L);
+
+        assertTrue(result);
+        assertEquals(1, comment.getLikeCount());
+        verify(commentLikeRepository).save(any(CommentLike.class));
+    }
+
+    @Test
+    void toggleLike_removesLike() {
+        Comment comment = new Comment();
+        comment.setId(1L);
+        comment.setLikeCount(1);
+        CommentLike like = new CommentLike();
+        like.setCommentId(1L);
+        like.setUserId(1L);
+
+        when(commentRepository.findById(1L)).thenReturn(Optional.of(comment));
+        when(commentLikeRepository.findByCommentIdAndUserId(1L, 1L)).thenReturn(Optional.of(like));
+
+        boolean result = commentService.toggleLike(1L, 1L);
+
+        assertFalse(result);
+        assertEquals(0, comment.getLikeCount());
+        verify(commentLikeRepository).delete(like);
     }
 }

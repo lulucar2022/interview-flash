@@ -3,6 +3,8 @@ package com.flash.community.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flash.auth.jwt.CustomUserDetails;
 import com.flash.community.dto.CommentCreateRequest;
+import com.flash.community.dto.CommentTreeDTO;
+import com.flash.community.dto.CommentUpdateRequest;
 import com.flash.community.entity.Comment;
 import com.flash.community.service.CommentService;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,9 +18,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 
 import java.util.List;
 
@@ -53,9 +52,9 @@ class CommentControllerTest {
     }
 
     @Test
-    void list_returnsComments() throws Exception {
-        Page<Comment> page = new PageImpl<>(List.of());
-        when(commentService.getArticleComments(1L, 0, 20)).thenReturn(page);
+    void list_returnsCommentTree() throws Exception {
+        when(commentService.getArticleCommentsWithLikes(eq(1L), eq("oldest"), eq(1L)))
+                .thenReturn(List.of());
 
         mockMvc.perform(get("/api/articles/1/comments"))
                 .andExpect(status().isOk())
@@ -89,5 +88,40 @@ class CommentControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void update_validRequest_returnsUpdated() throws Exception {
+        CommentUpdateRequest req = new CommentUpdateRequest();
+        req.setContent("Updated content");
+
+        Comment updated = new Comment();
+        updated.setId(1L);
+        updated.setContent("Updated content");
+        when(commentService.updateComment(eq(1L), eq(1L), eq("Updated content"))).thenReturn(updated);
+
+        mockMvc.perform(put("/api/articles/1/comments/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200));
+    }
+
+    @Test
+    void delete_validRequest_returnsSuccess() throws Exception {
+        doNothing().when(commentService).deleteComment(1L, 1L);
+
+        mockMvc.perform(delete("/api/articles/1/comments/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200));
+    }
+
+    @Test
+    void like_toggle_returnsStatus() throws Exception {
+        when(commentService.toggleLike(1L, 1L)).thenReturn(true);
+
+        mockMvc.perform(post("/api/articles/1/comments/1/like"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.liked").value(true));
     }
 }
