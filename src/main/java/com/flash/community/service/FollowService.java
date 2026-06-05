@@ -1,13 +1,19 @@
 package com.flash.community.service;
 
+import com.flash.auth.entity.User;
+import com.flash.auth.repository.UserRepository;
 import com.flash.community.entity.Follow;
 import com.flash.community.repository.FollowRepository;
 import com.flash.common.exception.BusinessException;
+import com.flash.community.dto.FollowUserDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -16,7 +22,8 @@ public class FollowService {
 
     private final FollowRepository followRepository;
     private final NotificationService notificationService;
-
+    private final UserRepository userRepository;
+    
     public boolean toggleFollow(Long userId, Long followingId) {
         log.debug("toggleFollow: userId={}, followingId={}", userId, followingId);
         if (userId.equals(followingId)) {
@@ -64,5 +71,47 @@ public class FollowService {
     @Transactional(readOnly = true)
     public boolean isFollowing(Long userId, Long followingId) {
         return followRepository.existsByUserIdAndFollowingId(userId, followingId);
+    }
+
+    public List<FollowUserDTO> getFollowersWithProfile(Long userId, Long currentUserId) {
+        List<FollowUserDTO> followers = new ArrayList<>();
+        List<Follow> byFollowingId = followRepository.findByFollowingId(userId);
+        byFollowingId.forEach(follow -> {
+            FollowUserDTO followUserDTO = new FollowUserDTO(null,null,null,null,false,false);
+            Long userId1 = follow.getUserId();
+            boolean isFollowing = followRepository.existsByUserIdAndFollowingId(currentUserId, userId1);
+            boolean isMutual = isFollowing && followRepository.existsByUserIdAndFollowingId(userId1, currentUserId);
+            User user = userRepository.findById(userId1)
+                            .orElseThrow(() -> new BusinessException("用户不存在"));
+            followUserDTO.setId(user.getId());
+            followUserDTO.setNickname(user.getNickname());
+            followUserDTO.setAvatarUrl(user.getAvatarUrl());
+            followUserDTO.setBio(user.getBio());
+            followUserDTO.setMutual(isMutual);
+            followUserDTO.setFollowing(isFollowing);
+            followers.add(followUserDTO);
+        });
+        return  followers;
+    }
+
+    public List<FollowUserDTO> getFollowingWithProfile(Long userId, Long currentUserId) {
+        List<FollowUserDTO> followers = new ArrayList<>();
+        List<Follow> byUserId = followRepository.findByUserId(userId);
+        byUserId.forEach(follow -> {
+            FollowUserDTO followUserDTO = new FollowUserDTO(null,null,null,null,false,false);
+            Long followingId = follow.getFollowingId();
+            boolean isFollowing = followRepository.existsByUserIdAndFollowingId(currentUserId, followingId);
+            boolean isMutual = isFollowing && followRepository.existsByUserIdAndFollowingId(followingId, currentUserId);
+            User user = userRepository.findById(followingId)
+                            .orElseThrow(() -> new BusinessException("用户不存在"));
+            followUserDTO.setId(user.getId());
+            followUserDTO.setMutual(isMutual);
+            followUserDTO.setFollowing(isFollowing);
+            followUserDTO.setNickname(user.getNickname());
+            followUserDTO.setAvatarUrl(user.getAvatarUrl());
+            followUserDTO.setBio(user.getBio());
+            followers.add(followUserDTO);
+        });
+        return   followers;
     }
 }
