@@ -28,6 +28,11 @@ spring:
     serialization:
       fail-on-empty-beans: false
 
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+
 jwt:
   secret: forest-jwt-secret-key-change-in-production-environment
   expiration-ms: 86400000
@@ -38,12 +43,6 @@ server:
 app:
   upload:
     path: ${user.dir}/uploads
-
-spring:
-  servlet:
-    multipart:
-      max-file-size: 5MB
-      max-request-size: 10MB
 
 logging:
   level:
