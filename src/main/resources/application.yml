@@ -35,6 +35,16 @@ jwt:
 server:
   port: 8080
 
+app:
+  upload:
+    path: ${user.dir}/uploads
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+
 logging:
   level:
     com.flash: DEBUG
