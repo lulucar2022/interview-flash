@@ -47,7 +47,8 @@ public class LikeService {
                                 article.getAuthor().getId(),
                                 "like",
                                 "赞了你的文章",
-                                userId
+                                userId,
+                                articleId
                         );
                     }
                     return true;

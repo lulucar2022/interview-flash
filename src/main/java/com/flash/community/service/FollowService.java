@@ -48,7 +48,8 @@ public class FollowService {
                             followingId,
                             "follow",
                             "关注了你",
-                            userId
+                            userId,
+                            null
                     );
                     return true;
                 });

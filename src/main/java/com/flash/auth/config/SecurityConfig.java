@@ -34,7 +34,8 @@ public class SecurityConfig {
                     "/v3/api-docs/**",
                     "/api/topics",
                     "/api/users/*/profile",
-                    "/api/users/*/articles"
+                    "/api/users/*/articles",
+                    "/api/notifications/subscribe"
                 ).permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()

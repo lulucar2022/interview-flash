@@ -29,7 +29,7 @@ class FollowServiceTest {
     void toggleFollow_firstTime_returnsTrue() {
         when(followRepository.findByUserIdAndFollowingId(1L, 2L))
                 .thenReturn(Optional.empty());
-        when(notificationService.createNotification(anyLong(), anyString(), anyString(), anyLong()))
+        when(notificationService.createNotification(anyLong(), anyString(), anyString(), anyLong(), any()))
                 .thenReturn(null);
 
         boolean result = followService.toggleFollow(1L, 2L);

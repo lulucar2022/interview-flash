@@ -124,7 +124,8 @@ public class CommentService {
                     article.getAuthor().getId(),
                     "comment",
                     "评论了你的文章",
-                    userId
+                    userId,
+                    articleId
             );
         }
         return comment;
@@ -195,7 +196,8 @@ public class CommentService {
                         comment.getAuthor().getId(),
                         "like",
                         "赞了你的评论",
-                        userId
+                        userId,
+                        commentId
                 );
             }
             return true;
