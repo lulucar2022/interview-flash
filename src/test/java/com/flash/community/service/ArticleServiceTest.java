@@ -37,6 +37,8 @@ class ArticleServiceTest {
     private ArticleTagRepository articleTagRepository;
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private BlacklistRepository blacklistRepository;
 
     @InjectMocks
     private ArticleService articleService;
@@ -49,7 +51,7 @@ class ArticleServiceTest {
         when(articleRepository.findById(1L)).thenReturn(Optional.of(article));
         when(articleTagRepository.findByArticleId(1L)).thenReturn(List.of());
 
-        Article result = articleService.getArticle(1L);
+        Article result = articleService.getArticle(1L, null);
 
         assertEquals(1L, result.getId());
         assertEquals(11, result.getViewCount());
@@ -60,7 +62,7 @@ class ArticleServiceTest {
     void getArticle_notExists_throwsException() {
         when(articleRepository.findById(99L)).thenReturn(Optional.empty());
 
-        assertThrows(BusinessException.class, () -> articleService.getArticle(99L));
+        assertThrows(BusinessException.class, () -> articleService.getArticle(99L, null));
         verify(articleRepository, never()).incrementViewCount(any());
     }
 
@@ -132,7 +134,7 @@ class ArticleServiceTest {
     void listArticles_withTopicId_filtersByTopic() {
         Page<Article> page = new PageImpl<>(List.of());
         when(articleRepository.findByTopicIdAndStatus(eq(1L), eq(Article.ArticleStatus.PUBLISHED), any())).thenReturn(page);
-        articleService.listArticles(0, 10, 1L);
+        articleService.listArticles(0, 10, 1L, null);
         verify(articleRepository).findByTopicIdAndStatus(eq(1L), eq(Article.ArticleStatus.PUBLISHED), any());
     }
 
@@ -140,7 +142,7 @@ class ArticleServiceTest {
     void listArticles_withoutTopicId_returnsAll() {
         Page<Article> page = new PageImpl<>(List.of());
         when(articleRepository.findByStatusOrderByCreatedAtDesc(eq(Article.ArticleStatus.PUBLISHED), any())).thenReturn(page);
-        articleService.listArticles(0, 10, null);
+        articleService.listArticles(0, 10, null, null);
         verify(articleRepository).findByStatusOrderByCreatedAtDesc(eq(Article.ArticleStatus.PUBLISHED), any());
     }
 
@@ -148,7 +150,7 @@ class ArticleServiceTest {
     void searchByKeyword_delegates() {
         Page<Article> page = new PageImpl<>(List.of());
         when(articleRepository.searchByKeyword(eq("test"), any(Pageable.class))).thenReturn(page);
-        articleService.search("test", 0, 10);
+        articleService.search("test", 0, 10, null);
         verify(articleRepository).searchByKeyword(eq("test"), any(Pageable.class));
     }
 
@@ -156,7 +158,7 @@ class ArticleServiceTest {
     void getHotArticles_delegates() {
         Page<Article> page = new PageImpl<>(List.of());
         when(articleRepository.findHotArticles(any())).thenReturn(page);
-        articleService.getHotArticles(0, 10);
+        articleService.getHotArticles(0, 10, null);
         verify(articleRepository).findHotArticles(any());
     }
 }

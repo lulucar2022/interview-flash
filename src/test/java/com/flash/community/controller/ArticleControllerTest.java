@@ -53,7 +53,7 @@ class ArticleControllerTest {
 
     @Test
     void list_withoutTopicId_returnsPage() throws Exception {
-        when(articleService.listArticles(0, 20, null))
+        when(articleService.listArticles(0, 20, null, 1L))
                 .thenReturn(new PageImpl<>(List.of()));
 
         mockMvc.perform(get("/api/articles"))
@@ -63,7 +63,7 @@ class ArticleControllerTest {
 
     @Test
     void list_withTopicId_returnsFiltered() throws Exception {
-        when(articleService.listArticles(0, 20, 1L))
+        when(articleService.listArticles(0, 20, 1L, 1L))
                 .thenReturn(new PageImpl<>(List.of()));
 
         mockMvc.perform(get("/api/articles").param("topicId", "1"))
@@ -76,7 +76,7 @@ class ArticleControllerTest {
         Article article = new Article();
         article.setId(1L);
         article.setTitle("Test");
-        when(articleService.getArticle(1L)).thenReturn(article);
+        when(articleService.getArticle(1L, 1L)).thenReturn(article);
 
         mockMvc.perform(get("/api/articles/1"))
                 .andExpect(status().isOk())
@@ -86,7 +86,7 @@ class ArticleControllerTest {
 
     @Test
     void detail_notExists_returnsError() throws Exception {
-        when(articleService.getArticle(99L))
+        when(articleService.getArticle(99L, 1L))
                 .thenThrow(new com.flash.common.exception.BusinessException("文章不存在"));
 
         mockMvc.perform(get("/api/articles/99"))

@@ -8,6 +8,7 @@ import com.flash.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,8 +25,9 @@ public class ArticleService {
     private final TopicRepository topicRepository;
     private final ArticleTagRepository articleTagRepository;
     private final UserRepository userRepository;
+    private final BlacklistRepository blacklistRepository;
 
-    public Page<Article> listArticles(int page, int size, Long topicId) {
+    public Page<Article> listArticles(int page, int size, Long topicId, Long currentUserId) {
         log.debug("listArticles: page={}, size={}, topicId={}", page, size, topicId);
         PageRequest pageable = PageRequest.of(page, size);
         Page<Article> result;
@@ -35,6 +37,15 @@ public class ArticleService {
             result = articleRepository.findByStatusOrderByCreatedAtDesc(Article.ArticleStatus.PUBLISHED, pageable);
         }
         result.forEach(this::populateTags);
+        if (currentUserId != null) {
+            List<Long> blockedIds = blacklistRepository.findBlockedUserIdsByBlockerId(currentUserId);
+            if (!blockedIds.isEmpty()) {
+                List<Article> filtered = result.stream()
+                        .filter(a -> !blockedIds.contains(a.getAuthor().getId()))
+                        .collect(Collectors.toList());
+                result = new PageImpl<>(filtered, result.getPageable(), filtered.size());
+            }
+        }
         return result;
     }
 
@@ -52,18 +63,33 @@ public class ArticleService {
         return result;
     }
 
-    public Page<Article> getHotArticles(int page, int size) {
+    public Page<Article> getHotArticles(int page, int size, Long currentUserId) {
         log.debug("getHotArticles: page={}, size={}", page, size);
         Page<Article> result = articleRepository.findHotArticles(PageRequest.of(page, size));
         result.forEach(this::populateTags);
+        if (currentUserId != null) {
+            List<Long> blockedIds = blacklistRepository.findBlockedUserIdsByBlockerId(currentUserId);
+            if (!blockedIds.isEmpty()) {
+                List<Article> filtered = result.stream()
+                        .filter(a -> !blockedIds.contains(a.getAuthor().getId()))
+                        .collect(Collectors.toList());
+                result = new PageImpl<>(filtered, result.getPageable(), filtered.size());
+            }
+        }
         return result;
     }
 
     @Transactional
-    public Article getArticle(Long id) {
+    public Article getArticle(Long id, Long currentUserId) {
         log.debug("getArticle: id={}", id);
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new BusinessException("文章不存在"));
+        if (currentUserId != null) {
+            List<Long> blockedIds = blacklistRepository.findBlockedUserIdsByBlockerId(currentUserId);
+            if (blockedIds.contains(article.getAuthor().getId())) {
+                throw new BusinessException("文章不可见");
+            }
+        }
         articleRepository.incrementViewCount(id);
         article.setViewCount(article.getViewCount() + 1);
         populateTags(article);
@@ -181,10 +207,19 @@ public class ArticleService {
         log.info("Article deleted: id={}", id);
     }
 
-    public Page<Article> search(String keyword, int page, int size) {
+    public Page<Article> search(String keyword, int page, int size, Long currentUserId) {
         log.debug("search: keyword={}, page={}, size={}", keyword, page, size);
         Page<Article> result = articleRepository.searchByKeyword(keyword, PageRequest.of(page, size));
         result.forEach(this::populateTags);
+        if (currentUserId != null) {
+            List<Long> blockedIds = blacklistRepository.findBlockedUserIdsByBlockerId(currentUserId);
+            if (!blockedIds.isEmpty()) {
+                List<Article> filtered = result.stream()
+                        .filter(a -> !blockedIds.contains(a.getAuthor().getId()))
+                        .collect(Collectors.toList());
+                result = new PageImpl<>(filtered, result.getPageable(), filtered.size());
+            }
+        }
         return result;
     }
 

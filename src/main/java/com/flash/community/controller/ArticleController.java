@@ -26,8 +26,10 @@ public class ArticleController {
     public ApiResponse<Page<Article>> list(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
-            @RequestParam(required = false) Long topicId) {
-        return ApiResponse.success(articleService.listArticles(page, size, topicId));
+            @RequestParam(required = false) Long topicId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails != null ? userDetails.getId() : null;
+        return ApiResponse.success(articleService.listArticles(page, size, topicId, userId));
     }
 
     @GetMapping("/my")
@@ -49,21 +51,28 @@ public class ArticleController {
     @GetMapping("/hot")
     public ApiResponse<Page<Article>> hot(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return ApiResponse.success(articleService.getHotArticles(page, size));
+            @RequestParam(defaultValue = "10") int size,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails != null ? userDetails.getId() : null;
+        return ApiResponse.success(articleService.getHotArticles(page, size, userId));
     }
 
     @GetMapping("/search")
     public ApiResponse<Page<Article>> search(
             @RequestParam String q,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-        return ApiResponse.success(articleService.search(q, page, size));
+            @RequestParam(defaultValue = "20") int size,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails != null ? userDetails.getId() : null;
+        return ApiResponse.success(articleService.search(q, page, size, userId));
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<Article> detail(@PathVariable Long id) {
-        return ApiResponse.success(articleService.getArticle(id));
+    public ApiResponse<Article> detail(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails != null ? userDetails.getId() : null;
+        return ApiResponse.success(articleService.getArticle(id, userId));
     }
 
     @PostMapping("/{id}/like")
