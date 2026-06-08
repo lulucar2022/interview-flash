@@ -12,7 +12,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -26,6 +27,7 @@ public class ArticleService {
     private final ArticleTagRepository articleTagRepository;
     private final UserRepository userRepository;
     private final BlacklistRepository blacklistRepository;
+    private final ArticleDailyViewRepository articleDailyViewRepository;
 
     public Page<Article> listArticles(int page, int size, Long topicId, Long currentUserId) {
         log.debug("listArticles: page={}, size={}, topicId={}", page, size, topicId);
@@ -92,6 +94,7 @@ public class ArticleService {
         }
         articleRepository.incrementViewCount(id);
         article.setViewCount(article.getViewCount() + 1);
+        recordDailyView(article.getAuthor().getId());
         populateTags(article);
         return article;
     }
@@ -221,6 +224,48 @@ public class ArticleService {
             }
         }
         return result;
+    }
+
+    @Transactional
+    public void recordDailyView(Long userId) {
+        LocalDate today = LocalDate.now();
+        articleDailyViewRepository.findByUserIdAndDate(userId, today)
+                .ifPresentOrElse(
+                        v -> v.setCount(v.getCount() + 1),
+                        () -> {
+                            ArticleDailyView v = new ArticleDailyView();
+                            v.setUserId(userId);
+                            v.setDate(today);
+                            v.setCount(1);
+                            articleDailyViewRepository.save(v);
+                        }
+                );
+    }
+
+    public List<Map<String, Object>> getArticleViewTrend(Long userId, int days) {
+        LocalDate to = LocalDate.now();
+        LocalDate from = to.minusDays(days - 1);
+        List<ArticleDailyView> records = articleDailyViewRepository
+                .findByUserIdAndDateBetweenOrderByDateAsc(userId, from, to);
+
+        Map<String, Long> recordMap = new LinkedHashMap<>();
+        for (ArticleDailyView adv : records) {
+            recordMap.put(adv.getDate().toString(), adv.getCount().longValue());
+        }
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (int i = 0; i < days; i++) {
+            String date = from.plusDays(i).toString();
+            Map<String, Object> entry = new HashMap<>();
+            entry.put("date", date);
+            entry.put("count", recordMap.getOrDefault(date, 0L));
+            result.add(entry);
+        }
+        return result;
+    }
+
+    public Long getTotalArticleViews(Long userId) {
+        return articleRepository.sumViewCountByAuthorId(userId);
     }
 
     private void populateTags(Article article) {

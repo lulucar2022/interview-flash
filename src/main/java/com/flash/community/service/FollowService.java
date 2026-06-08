@@ -11,9 +11,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -92,6 +94,34 @@ public class FollowService {
             followers.add(followUserDTO);
         });
         return  followers;
+    }
+
+    public List<Map<String, Object>> getFollowerTrend(Long userId, int days) {
+        LocalDateTime since = LocalDateTime.now().minusDays(days - 1).with(LocalTime.MIN);
+        List<Object[]> rows = followRepository.findFollowerDailyCount(userId, since);
+
+        Map<String, Long> dailyMap = new LinkedHashMap<>();
+        for (Object[] row : rows) {
+            String date = row[0].toString();
+            long count = ((Number) row[1]).longValue();
+            dailyMap.put(date, count);
+        }
+
+        long baseCount = followRepository.countByFollowingId(userId);
+        for (String d : dailyMap.keySet()) {
+            baseCount -= dailyMap.get(d);
+        }
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (int i = 0; i < days; i++) {
+            String date = LocalDate.now().minusDays(days - 1 - i).format(DateTimeFormatter.ISO_LOCAL_DATE);
+            baseCount += dailyMap.getOrDefault(date, 0L);
+            Map<String, Object> entry = new HashMap<>();
+            entry.put("date", date);
+            entry.put("count", baseCount);
+            result.add(entry);
+        }
+        return result;
     }
 
     public List<FollowUserDTO> getFollowingWithProfile(Long userId, Long currentUserId) {

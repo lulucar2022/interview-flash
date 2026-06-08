@@ -39,17 +39,24 @@ class ArticleServiceTest {
     private UserRepository userRepository;
     @Mock
     private BlacklistRepository blacklistRepository;
+    @Mock
+    private ArticleDailyViewRepository articleDailyViewRepository;
 
     @InjectMocks
     private ArticleService articleService;
 
     @Test
     void getArticle_exists_incrementsViewCount() {
+        User author = new User();
+        author.setId(2L);
         Article article = new Article();
         article.setId(1L);
         article.setViewCount(10);
+        article.setAuthor(author);
         when(articleRepository.findById(1L)).thenReturn(Optional.of(article));
         when(articleTagRepository.findByArticleId(1L)).thenReturn(List.of());
+        when(articleDailyViewRepository.findByUserIdAndDate(anyLong(), any()))
+                .thenReturn(Optional.empty());
 
         Article result = articleService.getArticle(1L, null);
 
