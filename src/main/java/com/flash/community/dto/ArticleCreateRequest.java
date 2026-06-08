@@ -13,5 +13,7 @@ public class ArticleCreateRequest {
 
     private Long topicId;
     private String[] tags;
-    private String status = "PUBLISHED"; // PUBLISHED | DRAFT
+    private String status = "PUBLISHED";
+    private Long seriesId;
+    private Integer seriesOrder;
 }

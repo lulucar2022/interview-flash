@@ -99,7 +99,8 @@ public class ArticleController {
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ApiResponse.success(
             articleService.updateArticle(id, userDetails.getId(),
-                request.getTitle(), request.getContent(), request.getTopicId(), request.getTags()));
+                request.getTitle(), request.getContent(), request.getTopicId(), request.getTags(),
+                request.getSeriesId(), request.getSeriesOrder()));
     }
 
     @DeleteMapping("/{id}")
@@ -118,6 +119,7 @@ public class ArticleController {
                 ? Article.ArticleStatus.DRAFT : Article.ArticleStatus.PUBLISHED;
         return ApiResponse.success(
             articleService.createArticle(request.getTitle(), request.getContent(),
-                userDetails.getId(), request.getTopicId(), request.getTags(), status));
+                userDetails.getId(), request.getTopicId(), request.getTags(), status,
+                request.getSeriesId(), request.getSeriesOrder()));
     }
 }

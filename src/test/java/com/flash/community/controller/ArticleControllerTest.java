@@ -104,7 +104,7 @@ class ArticleControllerTest {
         saved.setId(10L);
         saved.setTitle("New Article");
         saved.setContent("New Content");
-        when(articleService.createArticle(eq("New Article"), eq("New Content"), eq(1L), isNull(), isNull(), eq(ArticleStatus.PUBLISHED)))
+        when(articleService.createArticle(eq("New Article"), eq("New Content"), eq(1L), isNull(), isNull(), eq(ArticleStatus.PUBLISHED), isNull(), isNull()))
                 .thenReturn(saved);
 
         mockMvc.perform(post("/api/articles")

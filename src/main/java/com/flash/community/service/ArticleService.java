@@ -28,6 +28,7 @@ public class ArticleService {
     private final UserRepository userRepository;
     private final BlacklistRepository blacklistRepository;
     private final ArticleDailyViewRepository articleDailyViewRepository;
+    private final SeriesRepository seriesRepository;
 
     public Page<Article> listArticles(int page, int size, Long topicId, Long currentUserId) {
         log.debug("listArticles: page={}, size={}, topicId={}", page, size, topicId);
@@ -100,7 +101,7 @@ public class ArticleService {
     }
 
     @Transactional
-    public Article createArticle(String title, String content, Long userId, Long topicId, String[] tagNames, Article.ArticleStatus status) {
+    public Article createArticle(String title, String content, Long userId, Long topicId, String[] tagNames, Article.ArticleStatus status, Long seriesId, Integer seriesOrder) {
         log.debug("createArticle: title={}, userId={}, topicId={}, status={}", title, userId, topicId, status);
         User author = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException("用户不存在"));
@@ -113,6 +114,17 @@ public class ArticleService {
             Topic topic = topicRepository.findById(topicId)
                     .orElseThrow(() -> new BusinessException("话题不存在"));
             article.setTopic(topic);
+        }
+        if (seriesId != null) {
+            Series series = seriesRepository.findById(seriesId)
+                    .orElseThrow(() -> new BusinessException("系列不存在"));
+            if (!series.getUserId().equals(userId)) {
+                throw new BusinessException("无权使用该系列");
+            }
+            article.setSeries(series);
+            article.setSeriesOrder(seriesOrder);
+            series.setArticleCount((int) articleRepository.countBySeriesId(seriesId) + 1);
+            seriesRepository.save(series);
         }
         article = articleRepository.save(article);
         log.info("Article created: id={}, title={}", article.getId(), title);
@@ -138,7 +150,7 @@ public class ArticleService {
     }
 
     @Transactional
-    public Article updateArticle(Long id, Long userId, String title, String content, Long topicId, String[] tagNames) {
+    public Article updateArticle(Long id, Long userId, String title, String content, Long topicId, String[] tagNames, Long seriesId, Integer seriesOrder) {
         log.debug("updateArticle: id={}, userId={}", id, userId);
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new BusinessException("文章不存在"));
@@ -154,6 +166,29 @@ public class ArticleService {
             article.setTopic(topic);
         } else {
             article.setTopic(null);
+        }
+
+        Series oldSeries = article.getSeries();
+        if (seriesId != null) {
+            Series series = seriesRepository.findById(seriesId)
+                    .orElseThrow(() -> new BusinessException("系列不存在"));
+            if (!series.getUserId().equals(userId)) {
+                throw new BusinessException("无权使用该系列");
+            }
+            article.setSeries(series);
+            article.setSeriesOrder(seriesOrder);
+        } else {
+            article.setSeries(null);
+            article.setSeriesOrder(null);
+        }
+        if (oldSeries != null && !oldSeries.equals(article.getSeries())) {
+            oldSeries.setArticleCount((int) articleRepository.countBySeriesId(oldSeries.getId()));
+            seriesRepository.save(oldSeries);
+        }
+        if (seriesId != null) {
+            Series series = seriesRepository.findById(seriesId).get();
+            series.setArticleCount((int) articleRepository.countBySeriesId(seriesId));
+            seriesRepository.save(series);
         }
 
         List<ArticleTag> oldTags = articleTagRepository.findByArticleId(id);

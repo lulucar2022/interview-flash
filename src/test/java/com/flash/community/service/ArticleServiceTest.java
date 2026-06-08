@@ -41,6 +41,8 @@ class ArticleServiceTest {
     private BlacklistRepository blacklistRepository;
     @Mock
     private ArticleDailyViewRepository articleDailyViewRepository;
+    @Mock
+    private SeriesRepository seriesRepository;
 
     @InjectMocks
     private ArticleService articleService;
@@ -86,7 +88,7 @@ class ArticleServiceTest {
         saved.setAuthor(author);
         when(articleRepository.save(any(Article.class))).thenReturn(saved);
 
-        Article result = articleService.createArticle("Test Title", "Test Content", 1L, null, null, ArticleStatus.PUBLISHED);
+        Article result = articleService.createArticle("Test Title", "Test Content", 1L, null, null, ArticleStatus.PUBLISHED, null, null);
 
         assertEquals("Test Title", result.getTitle());
         assertEquals("Test Content", result.getContent());
@@ -99,7 +101,7 @@ class ArticleServiceTest {
         when(userRepository.findById(99L)).thenReturn(Optional.empty());
 
         assertThrows(BusinessException.class,
-                () -> articleService.createArticle("Title", "Content", 99L, null, null, ArticleStatus.PUBLISHED));
+                () -> articleService.createArticle("Title", "Content", 99L, null, null, ArticleStatus.PUBLISHED, null, null));
         verify(articleRepository, never()).save(any());
     }
 
@@ -120,7 +122,7 @@ class ArticleServiceTest {
         saved.setTopic(topic);
         when(articleRepository.save(any(Article.class))).thenReturn(saved);
 
-        Article result = articleService.createArticle("Title", "Content", 1L, 2L, null, ArticleStatus.PUBLISHED);
+        Article result = articleService.createArticle("Title", "Content", 1L, 2L, null, ArticleStatus.PUBLISHED, null, null);
 
         assertNotNull(result.getTopic());
         assertEquals(2L, result.getTopic().getId());
@@ -134,7 +136,7 @@ class ArticleServiceTest {
         when(topicRepository.findById(99L)).thenReturn(Optional.empty());
 
         assertThrows(BusinessException.class,
-                () -> articleService.createArticle("Title", "Content", 1L, 99L, null, ArticleStatus.PUBLISHED));
+                () -> articleService.createArticle("Title", "Content", 1L, 99L, null, ArticleStatus.PUBLISHED, null, null));
     }
 
     @Test

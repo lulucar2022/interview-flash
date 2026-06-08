@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
 public interface ArticleRepository extends JpaRepository<Article, Long> {
 
@@ -39,4 +40,10 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     @Query("SELECT COALESCE(SUM(a.thumbsUpCount), 0) FROM Article a WHERE a.author.id = :authorId AND a.status = 'PUBLISHED'")
     long sumThumbsUpCountByAuthorId(@Param("authorId") Long authorId);
+
+    List<Article> findBySeriesId(Long seriesId);
+
+    Page<Article> findBySeriesIdAndStatusOrderBySeriesOrderAscCreatedAtDesc(Long seriesId, Article.ArticleStatus status, Pageable pageable);
+
+    long countBySeriesId(Long seriesId);
 }

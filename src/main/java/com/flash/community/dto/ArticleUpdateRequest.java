@@ -13,4 +13,6 @@ public class ArticleUpdateRequest {
 
     private Long topicId;
     private String[] tags;
+    private Long seriesId;
+    private Integer seriesOrder;
 }

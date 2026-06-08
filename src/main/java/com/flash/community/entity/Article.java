@@ -38,6 +38,13 @@ public class Article extends BaseEntity {
     @Column(nullable = false)
     private Integer thumbsUpCount = 0;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "series_id")
+    private Series series;
+
+    @Column(name = "series_order")
+    private Integer seriesOrder;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private ArticleStatus status = ArticleStatus.PUBLISHED;
