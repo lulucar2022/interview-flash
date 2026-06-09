@@ -46,4 +46,6 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     Page<Article> findBySeriesIdAndStatusOrderBySeriesOrderAscCreatedAtDesc(Long seriesId, Article.ArticleStatus status, Pageable pageable);
 
     long countBySeriesId(Long seriesId);
+
+    List<Article> findByStatus(Article.ArticleStatus status);
 }
