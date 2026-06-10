@@ -5,27 +5,26 @@
 ### 方式一：Docker Compose 一键部署（推荐）
 
 ```bash
-cd /root/my-project/interview-flash
-
-# 启动所有服务（PostgreSQL + 后端应用）
-docker-compose up -d --build
+# 从项目根目录启动所有服务（PostgreSQL + 后端 + 前端）
+docker compose up -d --build
 
 # 查看日志
-docker-compose logs -f
+docker compose logs -f
 
 # 停止服务
-docker-compose down
+docker compose down
 ```
 
 部署后访问：
-- 应用：http://localhost:8080
+- 前端页面：http://localhost:3000
+- 后端 API：http://localhost:8080
 - 接口文档：http://localhost:8080/swagger-ui.html
 
 ### 方式二：本地运行
 
 #### 前置条件
 - Java 17
-- Maven 3.9+
+- Gradle 8.7+
 - PostgreSQL 15
 
 #### 步骤
@@ -42,9 +41,9 @@ docker run -d --name interview-flash-db \
 
 2. 构建并运行应用
 ```bash
-cd /root/my-project/interview-flash
-mvn clean package -DskipTests
-java -jar target/interview-flash-0.0.1-SNAPSHOT.jar
+cd backend
+./gradlew bootJar --no-daemon
+java -jar build/libs/app.jar
 ```
 
 ## API 端点
@@ -80,6 +79,14 @@ java -jar target/interview-flash-0.0.1-SNAPSHOT.jar
 - `POST /api/progress?userId=1` - 更新学习进度
 - `DELETE /api/progress/reset?userId=1&questionId=1` - 重置题目进度
 
+## 持续集成
+
+项目已配置 GitHub Actions CI，每次 push 或 PR 到 `main` 分支时自动执行：
+- **后端**：`./gradlew test` + `./gradlew bootJar`
+- **前端**：`npm ci` + `npm run build`
+
+可在 `.github/workflows/ci.yml` 查看完整配置。将仓库推送到 GitHub 后，Actions 页面可见运行状态。
+
 ## 项目结构
 
 ```
@@ -102,7 +109,8 @@ interview-flash/
 ## 技术栈
 
 - **后端**: Spring Boot 3.2.x, Spring Data JPA, PostgreSQL
-- **工具**: Lombok, Maven, SpringDoc OpenAPI
+- **工具**: Lombok, Gradle, SpringDoc OpenAPI
+- **缓存**: Spring Cache + Caffeine（本地缓存，热点数据 TTL 3~30 分钟）
 - **部署**: Docker, Docker Compose
 
 ## 数据库表结构
@@ -177,11 +185,13 @@ curl -X POST http://localhost:8080/api/questions \
 
 ### 运行测试
 ```bash
-mvn test
+cd backend
+./gradlew test --no-daemon
 ```
 
 ### 构建镜像
 ```bash
-mvn clean package -DskipTests
+cd backend
+./gradlew bootJar --no-daemon
 docker build -t interview-flash .
 ```

@@ -8,6 +8,8 @@ import com.flash.community.repository.*;
 import com.flash.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +33,7 @@ public class ArticleService {
     private final ArticleDailyViewRepository articleDailyViewRepository;
     private final SeriesRepository seriesRepository;
 
+    @Cacheable(value = "articlePages", key = "#page + '-' + #size + '-' + #topicId + '-' + #currentUserId")
     public Page<Article> listArticles(int page, int size, Long topicId, Long currentUserId) {
         log.debug("listArticles: page={}, size={}, topicId={}", page, size, topicId);
         PageRequest pageable = PageRequest.of(page, size);
@@ -67,6 +70,7 @@ public class ArticleService {
         return result;
     }
 
+    @Cacheable(value = "hotArticles", key = "#page + '-' + #size + '-' + #currentUserId")
     public Page<Article> getHotArticles(int page, int size, Long currentUserId) {
         log.debug("getHotArticles: page={}, size={}", page, size);
         Page<Article> result = articleRepository.findHotArticles(PageRequest.of(page, size));
@@ -102,6 +106,7 @@ public class ArticleService {
     }
 
     @Transactional
+    @CacheEvict(value = {"articlePages", "hotArticles"}, allEntries = true)
     public Article createArticle(String title, String content, Long userId, Long topicId, String[] tagNames, Article.ArticleStatus status, Long seriesId, Integer seriesOrder) {
         log.debug("createArticle: title={}, userId={}, topicId={}, status={}", title, userId, topicId, status);
         User author = userRepository.findById(userId)
@@ -151,6 +156,7 @@ public class ArticleService {
     }
 
     @Transactional
+    @CacheEvict(value = {"articlePages", "hotArticles"}, allEntries = true)
     public Article updateArticle(Long id, Long userId, String title, String content, Long topicId, String[] tagNames, Long seriesId, Integer seriesOrder) {
         log.debug("updateArticle: id={}, userId={}", id, userId);
         Article article = articleRepository.findById(id)
@@ -227,6 +233,7 @@ public class ArticleService {
     }
 
     @Transactional
+    @CacheEvict(value = {"articlePages", "hotArticles"}, allEntries = true)
     public void deleteArticle(Long id, Long userId) {
         log.debug("deleteArticle: id={}, userId={}", id, userId);
         Article article = articleRepository.findById(id)
@@ -324,6 +331,7 @@ public class ArticleService {
     }
 
     @Transactional
+    @CacheEvict(value = {"articlePages", "hotArticles"}, allEntries = true)
     public void deleteArticleForAdmin(Long id) {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> BusinessException.notFound("文章不存在"));

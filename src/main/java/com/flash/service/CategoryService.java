@@ -6,6 +6,8 @@ import com.flash.repository.CategoryRepository;
 import com.flash.repository.QuestionRepository;
 import com.flash.dto.CategoryDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -19,6 +21,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final QuestionRepository questionRepository;
 
+    @Cacheable("categories")
     public List<CategoryDTO> getAllCategories() {
         return categoryRepository.findAllByOrderByIdAsc().stream()
                 .map(this::convertToDTO)
@@ -32,6 +35,7 @@ public class CategoryService {
     }
 
     @Transactional
+    @CacheEvict(value = "categories", allEntries = true)
     public CategoryDTO createCategory(String name, String description) {
         if (categoryRepository.findByName(name).isPresent()) {
             throw BusinessException.badRequest("分类已存在");
@@ -43,6 +47,7 @@ public class CategoryService {
     }
 
     @Transactional
+    @CacheEvict(value = "categories", allEntries = true)
     public CategoryDTO updateCategory(Long id, String name, String description) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> BusinessException.notFound("分类不存在"));
@@ -58,6 +63,7 @@ public class CategoryService {
     }
 
     @Transactional
+    @CacheEvict(value = "categories", allEntries = true)
     public void deleteCategory(Long id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> BusinessException.notFound("分类不存在"));
