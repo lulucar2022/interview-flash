@@ -2,6 +2,7 @@ package com.flash.community.service;
 
 import com.flash.auth.entity.User;
 import com.flash.auth.repository.UserRepository;
+import com.flash.community.dto.AdminArticleDTO;
 import com.flash.community.entity.*;
 import com.flash.community.repository.*;
 import com.flash.common.exception.BusinessException;
@@ -186,7 +187,8 @@ public class ArticleService {
             seriesRepository.save(oldSeries);
         }
         if (seriesId != null) {
-            Series series = seriesRepository.findById(seriesId).get();
+            Series series = seriesRepository.findById(seriesId)
+                    .orElseThrow(() -> BusinessException.notFound("系列不存在"));
             series.setArticleCount((int) articleRepository.countBySeriesId(seriesId));
             seriesRepository.save(series);
         }
@@ -312,5 +314,38 @@ public class ArticleService {
         List<Long> tagIds = articleTags.stream().map(ArticleTag::getTagId).toList();
         List<Tag> tags = tagRepository.findAllById(tagIds);
         article.setTags(tags.stream().map(Tag::getTagName).collect(Collectors.joining(",")));
+    }
+
+    // ── Admin API ──
+
+    public Page<AdminArticleDTO> listAllForAdmin(int page, int size) {
+        return articleRepository.findAll(PageRequest.of(page, size))
+                .map(AdminArticleDTO::from);
+    }
+
+    @Transactional
+    public void deleteArticleForAdmin(Long id) {
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> BusinessException.notFound("文章不存在"));
+        // 清理标签计数
+        List<ArticleTag> oldTags = articleTagRepository.findByArticleId(id);
+        for (ArticleTag at : oldTags) {
+            tagRepository.findById(at.getTagId()).ifPresent(tag -> {
+                tag.setArticleCount(Math.max(0, tag.getArticleCount() - 1));
+                tagRepository.save(tag);
+            });
+        }
+        articleTagRepository.deleteByArticleId(id);
+        // 清理系列计数
+        if (article.getSeries() != null) {
+            Series series = article.getSeries();
+            series.setArticleCount((int) articleRepository.countBySeriesId(series.getId()));
+            seriesRepository.save(series);
+        }
+        articleRepository.delete(article);
+    }
+
+    public List<Article> getPublishedArticlesForSitemap() {
+        return articleRepository.findByStatus(Article.ArticleStatus.PUBLISHED);
     }
 }

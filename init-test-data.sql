@@ -7,6 +7,17 @@ DELETE FROM wrong_questions;
 DELETE FROM user_progress;
 DELETE FROM questions;
 DELETE FROM categories;
+DELETE FROM comment_likes;
+DELETE FROM comments;
+DELETE FROM article_tags;
+DELETE FROM article_likes;
+DELETE FROM bookmarks;
+DELETE FROM blockers;
+DELETE FROM notifications;
+DELETE FROM article_daily_views;
+DELETE FROM series;
+DELETE FROM follows;
+DELETE FROM articles;
 DELETE FROM users WHERE username NOT IN ('admin');
 
 -- ============================================
@@ -404,3 +415,250 @@ VALUES
  '写反了ACID的特性',
  (SELECT answer FROM questions ORDER BY id LIMIT 1 OFFSET 5),
  false, 1, NOW() - INTERVAL '1 day');
+
+-- ============================================
+-- 6. 补充多题型题目
+-- ============================================
+INSERT INTO questions (title, content, answer, category_id, difficulty, type, created_at, updated_at) VALUES
+(
+  'Java中哪个关键字可以实现线程同步？',
+  '以下哪个关键字可以保证线程安全？',
+  'A. synchronized\nB. volatile\nC. transient\nD. final',
+  (SELECT id FROM categories WHERE name = 'Java基础'),
+  'EASY', 'SINGLE_CHOICE', NOW(), NOW()
+),
+(
+  '下列哪些是 Spring Boot 的 Starter？',
+  '以下哪些属于 Spring Boot 官方提供的 Starter？（多选）',
+  'A. spring-boot-starter-web\nB. spring-boot-starter-data-jpa\nC. spring-boot-starter-dubbo\nD. spring-boot-starter-security',
+  (SELECT id FROM categories WHERE name = 'Spring框架'),
+  'MEDIUM', 'MULTIPLE_CHOICE', NOW(), NOW()
+),
+(
+  'HashMap 是线程安全的吗？',
+  '判断：HashMap 在多线程环境下可以安全使用。',
+  'FALSE\nHashMap 不是线程安全的，多线程环境应使用 ConcurrentHashMap。',
+  (SELECT id FROM categories WHERE name = 'Java基础'),
+  'EASY', 'TRUE_FALSE', NOW(), NOW()
+),
+(
+  '实现 LRU 缓存',
+  '设计并实现一个 LRU（最近最少使用）缓存机制，支持 get 和 put 操作，要求时间复杂度 O(1)。',
+  'class LRUCache extends LinkedHashMap<Integer, Integer> {\n    private final int capacity;\n    public LRUCache(int capacity) {\n        super(capacity, 0.75f, true);\n        this.capacity = capacity;\n    }\n    public int get(int key) {\n        return super.getOrDefault(key, -1);\n    }\n    public void put(int key, int value) {\n        super.put(key, value);\n    }\n    @Override\n    protected boolean removeEldestEntry(Map.Entry eldest) {\n        return size() > capacity;\n    }\n}',
+  (SELECT id FROM categories WHERE name = '算法与数据结构'),
+  'HARD', 'CODING', NOW(), NOW()
+),
+(
+  '下列哪些是 Redis 支持的淘汰策略？',
+  '以下哪些属于 Redis 的内存淘汰策略？（多选）',
+  'A. noeviction\nB. allkeys-lru\nC. volatile-ttl\nD. allkeys-random',
+  (SELECT id FROM categories WHERE name = '中间件'),
+  'MEDIUM', 'MULTIPLE_CHOICE', NOW(), NOW()
+),
+(
+  'PostgreSQL 支持 JSON 数据类型吗？',
+  '判断：PostgreSQL 原生支持 JSON 和 JSONB 数据类型。',
+  'TRUE\nPostgreSQL 支持 JSON 和 JSONB 两种类型，JSONB 支持索引和更高效的查询。',
+  (SELECT id FROM categories WHERE name = '数据库'),
+  'EASY', 'TRUE_FALSE', NOW(), NOW()
+);
+
+-- ============================================
+-- 7. 社区数据：文章
+-- ============================================
+INSERT INTO articles (title, content, user_id, topic_id, view_count, comment_count, thumbs_up_count, status, created_at, updated_at) VALUES
+(
+  '深入理解 Java 内存模型',
+  '## 前言\n\nJava内存模型（JMM）是理解并发编程的基础。本文将从底层原理出发，详细解析JMM的核心概念。\n\n## 主内存与工作内存\n\n每个线程都有自己的工作内存，线程对变量的操作必须在工作内存中进行，不能直接操作主内存。\n\n## volatile 关键字\n\nvolatile 保证了可见性和禁止指令重排，但不保证原子性。\n\n## happens-before 原则\n\n1. 程序顺序规则\n2. 监视器锁规则\n3. volatile 变量规则\n4. 传递性\n\n## 总结\n\n理解JMM是写好并发代码的基础，建议结合 JUC 源码深入学习。',
+  (SELECT id FROM users WHERE username = 'test'),
+  (SELECT id FROM topics WHERE topic_name = 'Java'),
+  120, 3, 15, 'PUBLISHED', NOW() - INTERVAL '5 days', NOW() - INTERVAL '5 days'
+),
+(
+  'Spring Boot 微服务实战总结',
+  '## 项目背景\n\n最近完成了一个基于 Spring Boot 的微服务项目，总结一些经验。\n\n## 技术栈\n\n- Spring Boot 3.2\n- Spring Cloud Gateway\n- Nacos 注册中心\n- Sentinel 限流\n\n## 踩坑记录\n\n### 1. 服务间调用超时\n配置合理的超时时间，避免雪崩。\n\n### 2. 分布式事务\n使用 Seata AT 模式解决。\n\n## 总结\n\n微服务架构并非银弹，需要根据业务规模合理选择。',
+  (SELECT id FROM users WHERE username = 'demo'),
+  (SELECT id FROM topics WHERE topic_name = 'Spring Boot'),
+  85, 5, 22, 'PUBLISHED', NOW() - INTERVAL '3 days', NOW() - INTERVAL '3 days'
+),
+(
+  'Vue 3 组合式 API 最佳实践',
+  '## 为什么要用组合式 API？\n\n相比 Options API，组合式 API 更适合大型项目的逻辑复用。\n\n## 常用模式\n\n### 1. 自定义 Composable\n```js\nexport function useCounter(initial = 0) {\n  const count = ref(initial)\n  const increment = () => count.value++\n  return { count, increment }\n}\n```\n\n### 2. 响应式解耦\n使用 `toRefs` 解构 props 保持响应性。\n\n## 总结\n\n组合式 API 是 Vue 3 的核心优势，善用它可以让代码更清晰。',
+  (SELECT id FROM users WHERE username = 'test'),
+  (SELECT id FROM topics WHERE topic_name = 'Vue.js'),
+  200, 8, 30, 'PUBLISHED', NOW() - INTERVAL '2 days', NOW() - INTERVAL '2 days'
+),
+(
+  'PostgreSQL 性能优化指南',
+  '## 索引优化\n\n### B-tree 索引\n最常用的索引类型，适合等值查询和范围查询。\n\n### 部分索引\n```sql\nCREATE INDEX idx_active_users ON users(email) WHERE active = true;\n```\n\n## 查询优化\n\n使用 EXPLAIN ANALYZE 分析执行计划。\n\n## 连接池配置\n\n推荐使用 PgBouncer，配置合理的连接池大小。',
+  (SELECT id FROM users WHERE username = 'demo'),
+  (SELECT id FROM topics WHERE topic_name = '数据库'),
+  65, 2, 10, 'PUBLISHED', NOW() - INTERVAL '1 day', NOW() - INTERVAL '1 day'
+),
+(
+  'Redis 集群搭建与运维实战',
+  '## 集群架构\n\nRedis Cluster 采用哈希槽分片，共 16384 个槽。\n\n## 搭建步骤\n\n1. 准备 6 个节点（3主3从）\n2. 执行 `redis-cli --cluster create`\n3. 验证集群状态\n\n## 常见问题\n\n### 脑裂问题\n配置 `min-replicas-to-write` 防止。\n\n### 大 Key 处理\n使用 `UNLINK` 异步删除。',
+  (SELECT id FROM users WHERE username = 'test'),
+  (SELECT id FROM topics WHERE topic_name = 'Java'),
+  150, 4, 18, 'PUBLISHED', NOW() - INTERVAL '4 days', NOW() - INTERVAL '4 days'
+);
+
+-- ============================================
+-- 8. 社区数据：标签关联
+-- ============================================
+INSERT INTO article_tags (article_id, tag_id)
+SELECT a.id, t.id FROM articles a, tags t
+WHERE a.title = '深入理解 Java 内存模型' AND t.tag_name IN ('java');
+
+INSERT INTO article_tags (article_id, tag_id)
+SELECT a.id, t.id FROM articles a, tags t
+WHERE a.title = 'Spring Boot 微服务实战总结' AND t.tag_name IN ('spring', '微服务');
+
+INSERT INTO article_tags (article_id, tag_id)
+SELECT a.id, t.id FROM articles a, tags t
+WHERE a.title = 'Vue 3 组合式 API 最佳实践' AND t.tag_name IN ('vue');
+
+INSERT INTO article_tags (article_id, tag_id)
+SELECT a.id, t.id FROM articles a, tags t
+WHERE a.title = 'PostgreSQL 性能优化指南' AND t.tag_name IN ('postgresql');
+
+INSERT INTO article_tags (article_id, tag_id)
+SELECT a.id, t.id FROM articles a, tags t
+WHERE a.title = 'Redis 集群搭建与运维实战' AND t.tag_name IN ('redis');
+
+-- ============================================
+-- 9. 社区数据：评论（含嵌套回复）
+-- ============================================
+INSERT INTO comments (content, article_id, user_id, parent_id, like_count, created_at) VALUES
+(
+  '写得很清晰，JMM这部分终于看懂了！',
+  (SELECT id FROM articles WHERE title = '深入理解 Java 内存模型'),
+  (SELECT id FROM users WHERE username = 'demo'),
+  NULL, 3, NOW() - INTERVAL '4 days'
+),
+(
+  '谢谢，有什么不理解的地方可以留言讨论',
+  (SELECT id FROM articles WHERE title = '深入理解 Java 内存模型'),
+  (SELECT id FROM users WHERE username = 'test'),
+  (SELECT id FROM comments WHERE content = '写得很清晰，JMM这部分终于看懂了！'), 1, NOW() - INTERVAL '4 days' + INTERVAL '1 hour'
+),
+(
+  '微服务踩坑那段太真实了，我们项目也遇到了类似问题',
+  (SELECT id FROM articles WHERE title = 'Spring Boot 微服务实战总结'),
+  (SELECT id FROM users WHERE username = 'test'),
+  NULL, 5, NOW() - INTERVAL '2 days'
+),
+(
+  'Seata AT 模式的性能开销如何？有做过压测吗？',
+  (SELECT id FROM articles WHERE title = 'Spring Boot 微服务实战总结'),
+  (SELECT id FROM users WHERE username = 'demo'),
+  NULL, 2, NOW() - INTERVAL '2 days' + INTERVAL '2 hours'
+),
+(
+  'toRefs 这个技巧很实用，收藏了',
+  (SELECT id FROM articles WHERE title = 'Vue 3 组合式 API 最佳实践'),
+  (SELECT id FROM users WHERE username = 'demo'),
+  NULL, 4, NOW() - INTERVAL '1 day'
+);
+
+-- ============================================
+-- 10. 社区数据：点赞
+-- ============================================
+INSERT INTO article_likes (article_id, user_id)
+SELECT a.id, u.id FROM articles a, users u
+WHERE a.title = '深入理解 Java 内存模型' AND u.username = 'demo';
+
+INSERT INTO article_likes (article_id, user_id)
+SELECT a.id, u.id FROM articles a, users u
+WHERE a.title = 'Vue 3 组合式 API 最佳实践' AND u.username = 'demo';
+
+INSERT INTO article_likes (article_id, user_id)
+SELECT a.id, u.id FROM articles a, users u
+WHERE a.title = 'Spring Boot 微服务实战总结' AND u.username = 'test';
+
+-- ============================================
+-- 11. 社区数据：关注关系
+-- ============================================
+INSERT INTO follows (user_id, following_id) VALUES
+((SELECT id FROM users WHERE username = 'test'), (SELECT id FROM users WHERE username = 'demo')),
+((SELECT id FROM users WHERE username = 'demo'), (SELECT id FROM users WHERE username = 'test'));
+
+-- ============================================
+-- 12. 社区数据：系列
+-- ============================================
+INSERT INTO series (user_id, title, description, article_count, created_at) VALUES
+(
+  (SELECT id FROM users WHERE username = 'test'),
+  'Java 并发编程系列',
+  '从基础到进阶，系统学习 Java 并发编程',
+  2, NOW() - INTERVAL '6 days'
+),
+(
+  (SELECT id FROM users WHERE username = 'demo'),
+  '微服务架构实战',
+  '记录微服务项目的踩坑与经验',
+  1, NOW() - INTERVAL '4 days'
+);
+
+-- 文章关联系列
+UPDATE articles SET series_id = (SELECT id FROM series WHERE title = 'Java 并发编程系列'), series_order = 1
+WHERE title = '深入理解 Java 内存模型';
+
+UPDATE articles SET series_id = (SELECT id FROM series WHERE title = 'Java 并发编程系列'), series_order = 2
+WHERE title = 'Redis 集群搭建与运维实战';
+
+UPDATE articles SET series_id = (SELECT id FROM series WHERE title = '微服务架构实战'), series_order = 1
+WHERE title = 'Spring Boot 微服务实战总结';
+
+-- ============================================
+-- 13. 社区数据：通知
+-- ============================================
+INSERT INTO notifications (user_id, type, data, is_read, from_user_id, target_id, summary, created_at) VALUES
+(
+  (SELECT id FROM users WHERE username = 'test'),
+  'COMMENT',
+  '{"articleTitle": "深入理解 Java 内存模型"}',
+  true,
+  (SELECT id FROM users WHERE username = 'demo'),
+  (SELECT id FROM articles WHERE title = '深入理解 Java 内存模型'),
+  'demo 评论了你的文章',
+  NOW() - INTERVAL '4 days'
+),
+(
+  (SELECT id FROM users WHERE username = 'demo'),
+  'LIKE',
+  '{"articleTitle": "Spring Boot 微服务实战总结"}',
+  false,
+  (SELECT id FROM users WHERE username = 'test'),
+  (SELECT id FROM articles WHERE title = 'Spring Boot 微服务实战总结'),
+  'test 赞了你的文章',
+  NOW() - INTERVAL '3 days'
+),
+(
+  (SELECT id FROM users WHERE username = 'test'),
+  'FOLLOW',
+  '{}',
+  false,
+  (SELECT id FROM users WHERE username = 'demo'),
+  NULL,
+  'demo 关注了你',
+  NOW() - INTERVAL '2 days'
+),
+(
+  (SELECT id FROM users WHERE username = 'demo'),
+  'COMMENT',
+  '{"articleTitle": "Vue 3 组合式 API 最佳实践"}',
+  false,
+  (SELECT id FROM users WHERE username = 'test'),
+  (SELECT id FROM articles WHERE title = 'Vue 3 组合式 API 最佳实践'),
+  'test 评论了你的文章',
+  NOW() - INTERVAL '1 day'
+);
+
+-- ============================================
+-- 14. 社区数据：书签/收藏
+-- ============================================
+INSERT INTO bookmarks (user_id, article_id, created_at) VALUES
+((SELECT id FROM users WHERE username = 'test'), (SELECT id FROM articles WHERE title = 'Spring Boot 微服务实战总结'), NOW() - INTERVAL '2 days'),
+((SELECT id FROM users WHERE username = 'demo'), (SELECT id FROM articles WHERE title = 'Vue 3 组合式 API 最佳实践'), NOW() - INTERVAL '1 day'),
+((SELECT id FROM users WHERE username = 'demo'), (SELECT id FROM articles WHERE title = '深入理解 Java 内存模型'), NOW() - INTERVAL '3 days');

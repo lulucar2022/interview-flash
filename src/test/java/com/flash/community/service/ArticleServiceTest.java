@@ -170,4 +170,78 @@ class ArticleServiceTest {
         articleService.getHotArticles(0, 10, null);
         verify(articleRepository).findHotArticles(any());
     }
+
+    // ── Boundary & Permission Tests ──
+
+    @Test
+    void getArticle_blockedAuthor_throwsException() {
+        User author = new User();
+        author.setId(2L);
+        Article article = new Article();
+        article.setId(1L);
+        article.setViewCount(0);
+        article.setAuthor(author);
+        when(articleRepository.findById(1L)).thenReturn(Optional.of(article));
+        when(blacklistRepository.findBlockedUserIdsByBlockerId(10L)).thenReturn(List.of(2L));
+
+        assertThrows(BusinessException.class, () -> articleService.getArticle(1L, 10L));
+    }
+
+    @Test
+    void deleteArticle_nonOwner_throws403() {
+        User owner = new User();
+        owner.setId(2L);
+        Article article = new Article();
+        article.setId(1L);
+        article.setAuthor(owner);
+        when(articleRepository.findById(1L)).thenReturn(Optional.of(article));
+
+        BusinessException ex = assertThrows(BusinessException.class,
+                () -> articleService.deleteArticle(1L, 99L));
+        assertEquals(403, ex.getCode());
+    }
+
+    @Test
+    void updateArticle_nonOwner_throws403() {
+        User owner = new User();
+        owner.setId(2L);
+        Article article = new Article();
+        article.setId(1L);
+        article.setAuthor(owner);
+        when(articleRepository.findById(1L)).thenReturn(Optional.of(article));
+
+        BusinessException ex = assertThrows(BusinessException.class,
+                () -> articleService.updateArticle(1L, 99L, "title", "content", null, null, null, null));
+        assertEquals(403, ex.getCode());
+    }
+
+    @Test
+    void deleteArticle_notFound_throwsException() {
+        when(articleRepository.findById(99L)).thenReturn(Optional.empty());
+        assertThrows(BusinessException.class, () -> articleService.deleteArticle(99L, 1L));
+    }
+
+    @Test
+    void listArticles_blockedUsersFiltered() {
+        User blockedAuthor = new User();
+        blockedAuthor.setId(5L);
+        Article blockedArticle = new Article();
+        blockedArticle.setId(10L);
+        blockedArticle.setAuthor(blockedAuthor);
+
+        User okAuthor = new User();
+        okAuthor.setId(6L);
+        Article okArticle = new Article();
+        okArticle.setId(11L);
+        okArticle.setAuthor(okAuthor);
+
+        Page<Article> page = new PageImpl<>(List.of(blockedArticle, okArticle));
+        when(articleRepository.findByStatusOrderByCreatedAtDesc(eq(Article.ArticleStatus.PUBLISHED), any())).thenReturn(page);
+        when(blacklistRepository.findBlockedUserIdsByBlockerId(1L)).thenReturn(List.of(5L));
+
+        Page<Article> result = articleService.listArticles(0, 10, null, 1L);
+
+        assertEquals(1, result.getContent().size());
+        assertEquals(11L, result.getContent().get(0).getId());
+    }
 }

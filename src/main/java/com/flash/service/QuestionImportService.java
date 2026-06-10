@@ -1,5 +1,6 @@
 package com.flash.service;
 
+import com.flash.common.exception.BusinessException;
 import com.flash.dto.ImportResult;
 import com.flash.entity.Category;
 import com.flash.entity.Question;
@@ -178,23 +179,23 @@ public class QuestionImportService {
 
     private Question buildQuestion(QuestionsImportRow row) {
         if (row.title == null || row.title.trim().isEmpty()) {
-            throw new RuntimeException("题目标题不能为空");
+            throw new BusinessException("题目标题不能为空");
         }
         if (row.content == null || row.content.trim().isEmpty()) {
-            throw new RuntimeException("题目内容不能为空");
+            throw new BusinessException("题目内容不能为空");
         }
         if (row.category == null) {
-            throw new RuntimeException("分类不存在: " + row.categoryName);
+            throw new BusinessException("分类不存在: " + row.categoryName);
         }
 
         String type = row.type.toUpperCase().trim();
         if (!VALID_TYPES.contains(type)) {
-            throw new RuntimeException("无效的题型: " + row.type + "，可选: " + String.join(",", VALID_TYPES));
+            throw new BusinessException("无效的题型: " + row.type + "，可选: " + String.join(",", VALID_TYPES));
         }
 
         String difficulty = row.difficulty.toUpperCase().trim();
         if (!VALID_DIFFICULTIES.contains(difficulty)) {
-            throw new RuntimeException("无效的难度: " + row.difficulty + "，可选: EASY,MEDIUM,HARD");
+            throw new BusinessException("无效的难度: " + row.difficulty + "，可选: EASY,MEDIUM,HARD");
         }
 
         Question question = new Question();
@@ -212,11 +213,11 @@ public class QuestionImportService {
 
     private Category getCategoryByName(String name, Map<String, Category> cache) {
         if (name == null || name.trim().isEmpty()) {
-            throw new RuntimeException("分类名称为空");
+            throw new BusinessException("分类名称为空");
         }
         return cache.computeIfAbsent(name.trim(), key ->
                 categoryRepository.findByName(key)
-                        .orElseThrow(() -> new RuntimeException("分类不存在: " + key)));
+                        .orElseThrow(() -> new BusinessException("分类不存在: " + key)));
     }
 
     private String getCellString(Row row, int col) {
@@ -345,7 +346,7 @@ public class QuestionImportService {
             workbook.write(bos);
             return bos.toByteArray();
         } catch (Exception e) {
-            throw new RuntimeException("模板生成失败", e);
+            throw new BusinessException("模板生成失败: " + e.getMessage());
         }
     }
 }

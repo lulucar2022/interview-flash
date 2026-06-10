@@ -8,6 +8,8 @@ import com.flash.auth.repository.RoleRepository;
 import com.flash.auth.repository.UserRepository;
 import com.flash.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -88,6 +90,21 @@ public class AuthService {
             throw new BusinessException("旧密码错误");
         }
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+    }
+
+    // ── Admin API ──
+
+    public Page<AdminUserDTO> listAllForAdmin(int page, int size) {
+        return userRepository.findAll(PageRequest.of(page, size))
+                .map(AdminUserDTO::from);
+    }
+
+    @Transactional
+    public void toggleUserStatus(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("用户不存在"));
+        user.setEnabled(!user.getEnabled());
         userRepository.save(user);
     }
 }

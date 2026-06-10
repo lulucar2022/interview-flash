@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -54,5 +56,19 @@ public class BlacklistService {
 
     public List<Blacklist> getBlockedEntries(Long userId) {
         return blacklistRepository.findByBlockerId(userId);
+    }
+
+    public List<Map<String, Object>> getBlockedUsersInfo(Long userId) {
+        List<Blacklist> entries = getBlockedEntries(userId);
+        return entries.stream().map(e -> {
+            User u = userRepository.findById(e.getBlockedId()).orElse(null);
+            return Map.<String, Object>of(
+                    "id", e.getId(),
+                    "userId", e.getBlockedId(),
+                    "nickname", u != null ? u.getNickname() : "已注销",
+                    "avatarUrl", u != null ? u.getAvatarUrl() : null,
+                    "createdAt", e.getCreatedAt()
+            );
+        }).collect(Collectors.toList());
     }
 }
