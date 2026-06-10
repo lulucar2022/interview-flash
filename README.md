@@ -81,11 +81,11 @@ java -jar build/libs/app.jar
 
 ## 持续集成
 
-项目已配置 GitHub Actions CI，每次 push 或 PR 到 `main` 分支时自动执行：
-- **后端**：`./gradlew test` + `./gradlew bootJar`
-- **前端**：`npm ci` + `npm run build`
+本仓库已配置 GitHub Actions CI，每次 push 或 PR 到 `main` 分支时自动执行：
+- `./gradlew test --no-daemon` — 运行全部测试
+- `./gradlew bootJar --no-daemon` — 构建可部署 JAR
 
-可在 `.github/workflows/ci.yml` 查看完整配置。将仓库推送到 GitHub 后，Actions 页面可见运行状态。
+配置位于 `.github/workflows/ci.yml`。
 
 ## 项目结构
 
