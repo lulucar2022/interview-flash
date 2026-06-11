@@ -66,7 +66,7 @@ public class BlacklistService {
                     "id", e.getId(),
                     "userId", e.getBlockedId(),
                     "nickname", u != null ? u.getNickname() : "已注销",
-                    "avatarUrl", u != null ? u.getAvatarUrl() : null,
+                    "avatarUrl", u != null ? u.getAvatarUrl() : "",
                     "createdAt", e.getCreatedAt()
             );
         }).collect(Collectors.toList());
