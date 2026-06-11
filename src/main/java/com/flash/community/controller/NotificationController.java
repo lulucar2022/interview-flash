@@ -2,6 +2,7 @@ package com.flash.community.controller;
 
 import com.flash.auth.jwt.CustomUserDetails;
 import com.flash.common.dto.ApiResponse;
+import com.flash.community.dto.NotificationDTO;
 import com.flash.community.entity.Notification;
 import com.flash.community.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     @GetMapping
-    public ApiResponse<Page<Notification>> list(
+    public ApiResponse<Page<NotificationDTO>> list(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {

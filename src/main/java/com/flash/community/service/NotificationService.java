@@ -2,6 +2,7 @@ package com.flash.community.service;
 
 import com.flash.auth.entity.User;
 import com.flash.auth.repository.UserRepository;
+import com.flash.community.dto.NotificationDTO;
 import com.flash.community.entity.Notification;
 import com.flash.community.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +21,22 @@ public class NotificationService {
     private final SseEmitterManager sseEmitterManager;
     private final UserRepository userRepository;
 
-    public Page<Notification> getUserNotifications(Long userId, int page, int size) {
-        return notificationRepository.findByUserIdOrderByCreatedAtDesc(userId, PageRequest.of(page, size));
+    @Transactional(readOnly = true)
+    public Page<NotificationDTO> getUserNotifications(Long userId, int page, int size) {
+        Page<Notification> notifications = notificationRepository.findByUserIdOrderByCreatedAtDesc(
+            userId, PageRequest.of(page, size));
+        return notifications.map(n -> {
+            String nickname = null;
+            String avatar = null;
+            if (n.getFromUserId() != null) {
+                User fromUser = userRepository.findById(n.getFromUserId()).orElse(null);
+                if (fromUser != null) {
+                    nickname = fromUser.getNickname();
+                    avatar = fromUser.getAvatarUrl();
+                }
+            }
+            return NotificationDTO.from(n, nickname, avatar);
+        });
     }
 
     public long getUnreadCount(Long userId) {
