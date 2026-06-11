@@ -1,11 +1,15 @@
 package com.flash.service;
 
+import com.flash.auth.dto.AdminUserDTO;
+import com.flash.auth.entity.Role;
+import com.flash.auth.entity.User;
+import com.flash.auth.repository.RoleRepository;
+import com.flash.auth.repository.UserRepository;
 import com.flash.dto.CreateUserDTO;
 import com.flash.dto.UserDTO;
-import com.flash.entity.User;
 import com.flash.common.exception.BusinessException;
-import com.flash.repository.OldUserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +25,9 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true) // 默认事务只读，提升性能
 public class UserService {
 
-    private final OldUserRepository userRepository;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * 根据ID查询用户
@@ -73,13 +79,17 @@ public class UserService {
             throw BusinessException.badRequest("邮箱已被使用");
         }
 
+        Role userRole = roleRepository.findByCode("USER")
+                .orElseThrow(() -> new BusinessException("默认角色不存在"));
+
         // 构建用户实体
         User user = new User();
         user.setUsername(dto.getUsername());
         user.setEmail(dto.getEmail());
-        user.setPassword(dto.getPassword());
-        // 如果没有设置显示名，则使用用户名
-        user.setDisplayName(dto.getDisplayName() != null ? dto.getDisplayName() : dto.getUsername());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setNickname(dto.getDisplayName() != null ? dto.getDisplayName() : dto.getUsername());
+        user.setRole(userRole);
+        user.setEnabled(true);
 
         // 保存到数据库
         return convertToDTO(userRepository.save(user));
@@ -110,9 +120,11 @@ public class UserService {
         // 更新用户信息
         user.setUsername(dto.getUsername());
         user.setEmail(dto.getEmail());
-        user.setPassword(dto.getPassword());
+        if (dto.getPassword() != null && !dto.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        }
         if (dto.getDisplayName() != null) {
-            user.setDisplayName(dto.getDisplayName());
+            user.setNickname(dto.getDisplayName());
         }
 
         return convertToDTO(userRepository.save(user));
@@ -143,8 +155,8 @@ public class UserService {
         dto.setId(user.getId());
         dto.setUsername(user.getUsername());
         dto.setEmail(user.getEmail());
-        dto.setDisplayName(user.getDisplayName());
-        dto.setCreatedAt(user.getCreatedAt().toString());
+        dto.setDisplayName(user.getNickname());
+        dto.setCreatedAt(user.getCreatedAt() != null ? user.getCreatedAt().toString() : null);
         return dto;
     }
 }
