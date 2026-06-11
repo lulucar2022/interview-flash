@@ -3,6 +3,7 @@ package com.flash.community.controller;
 import com.flash.auth.jwt.CustomUserDetails;
 import com.flash.common.dto.ApiResponse;
 import com.flash.community.dto.ArticleCreateRequest;
+import com.flash.community.dto.ArticleDTO;
 import com.flash.community.dto.ArticleUpdateRequest;
 import com.flash.community.entity.Article;
 import com.flash.community.service.ArticleService;
@@ -23,7 +24,7 @@ public class ArticleController {
     private final LikeService likeService;
 
     @GetMapping
-    public ApiResponse<Page<Article>> list(
+    public ApiResponse<Page<ArticleDTO>> list(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(required = false) Long topicId,
@@ -33,7 +34,7 @@ public class ArticleController {
     }
 
     @GetMapping("/my")
-    public ApiResponse<Page<Article>> my(
+    public ApiResponse<Page<ArticleDTO>> my(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -41,7 +42,7 @@ public class ArticleController {
     }
 
     @GetMapping("/my/drafts")
-    public ApiResponse<Page<Article>> myDrafts(
+    public ApiResponse<Page<ArticleDTO>> myDrafts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -49,7 +50,7 @@ public class ArticleController {
     }
 
     @GetMapping("/hot")
-    public ApiResponse<Page<Article>> hot(
+    public ApiResponse<Page<ArticleDTO>> hot(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -58,7 +59,7 @@ public class ArticleController {
     }
 
     @GetMapping("/search")
-    public ApiResponse<Page<Article>> search(
+    public ApiResponse<Page<ArticleDTO>> search(
             @RequestParam String q,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
@@ -68,7 +69,7 @@ public class ArticleController {
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<Article> detail(
+    public ApiResponse<ArticleDTO> detail(
             @PathVariable Long id,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         Long userId = userDetails != null ? userDetails.getId() : null;
@@ -93,7 +94,7 @@ public class ArticleController {
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<Article> update(
+    public ApiResponse<ArticleDTO> update(
             @PathVariable Long id,
             @Valid @RequestBody ArticleUpdateRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -112,7 +113,7 @@ public class ArticleController {
     }
 
     @PostMapping
-    public ApiResponse<Article> create(
+    public ApiResponse<ArticleDTO> create(
             @Valid @RequestBody ArticleCreateRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         Article.ArticleStatus status = "DRAFT".equals(request.getStatus())

@@ -2,6 +2,7 @@ package com.flash.community.service;
 
 import com.flash.auth.entity.User;
 import com.flash.auth.repository.UserRepository;
+import com.flash.community.dto.CommentDTO;
 import com.flash.community.dto.CommentTreeDTO;
 import com.flash.community.entity.*;
 import com.flash.community.repository.*;
@@ -96,7 +97,7 @@ public class CommentService {
     }
 
     @Transactional
-    public Comment createComment(String content, Long articleId, Long userId, Long parentId) {
+    public CommentDTO createComment(String content, Long articleId, Long userId, Long parentId) {
         log.debug("createComment: articleId={}, userId={}, parentId={}", articleId, userId, parentId);
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new BusinessException("文章不存在"));
@@ -128,11 +129,11 @@ public class CommentService {
                     articleId
             );
         }
-        return comment;
+        return CommentDTO.from(comment);
     }
 
     @Transactional
-    public Comment updateComment(Long commentId, Long userId, String content) {
+    public CommentDTO updateComment(Long commentId, Long userId, String content) {
         log.debug("updateComment: id={}, userId={}", commentId, userId);
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BusinessException("评论不存在"));
@@ -140,9 +141,9 @@ public class CommentService {
             throw new BusinessException(403, "无权编辑该评论");
         }
         comment.setContent(content);
-        Comment saved = commentRepository.save(comment);
+        commentRepository.save(comment);
         log.info("Comment updated: id={}", commentId);
-        return saved;
+        return CommentDTO.from(comment);
     }
 
     @Transactional

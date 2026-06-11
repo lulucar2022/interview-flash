@@ -1,6 +1,5 @@
 package com.flash.community.dto;
 
-import com.flash.community.entity.Article;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.data.domain.Page;
@@ -22,5 +21,5 @@ public class AuthorProfileResponse {
     private long followerCount;
     private long followingCount;
     private boolean isFollowing;
-    private Page<Article> recentArticles;
+    private Page<ArticleDTO> recentArticles;
 }

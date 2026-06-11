@@ -2,6 +2,7 @@ package com.flash.community.service;
 
 import com.flash.auth.entity.User;
 import com.flash.auth.repository.UserRepository;
+import com.flash.community.dto.ArticleDTO;
 import com.flash.community.dto.AuthorProfileResponse;
 import com.flash.community.entity.Article;
 import com.flash.community.repository.ArticleRepository;
@@ -34,7 +35,8 @@ public class AuthorService {
         long followingCount = followRepository.countByUserId(userId);
         boolean isFollowing = currentUserId != null && followRepository.existsByUserIdAndFollowingId(currentUserId, userId);
 
-        Page<Article> recentArticles = articleRepository.findByAuthorIdAndStatus(userId, Article.ArticleStatus.PUBLISHED, PageRequest.of(0, 10));
+        Page<ArticleDTO> recentArticles = articleRepository.findByAuthorIdAndStatus(userId, Article.ArticleStatus.PUBLISHED, PageRequest.of(0, 10))
+                .map(ArticleDTO::from);
 
         return new AuthorProfileResponse(
                 user.getId(),
@@ -53,11 +55,12 @@ public class AuthorService {
         );
     }
 
-    public Page<Article> getArticles(Long userId, int page, int size, Long currentUserId) {
+    public Page<ArticleDTO> getArticles(Long userId, int page, int size, Long currentUserId) {
         log.debug("getArticles: userId={}, page={}, size={}", userId, page, size);
         if (!userRepository.existsById(userId)) {
             throw new BusinessException("用户不存在");
         }
-        return articleRepository.findByAuthorIdAndStatus(userId, Article.ArticleStatus.PUBLISHED, PageRequest.of(page, size));
+        return articleRepository.findByAuthorIdAndStatus(userId, Article.ArticleStatus.PUBLISHED, PageRequest.of(page, size))
+                .map(ArticleDTO::from);
     }
 }

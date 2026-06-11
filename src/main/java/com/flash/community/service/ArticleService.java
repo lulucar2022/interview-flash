@@ -3,6 +3,7 @@ package com.flash.community.service;
 import com.flash.auth.entity.User;
 import com.flash.auth.repository.UserRepository;
 import com.flash.community.dto.AdminArticleDTO;
+import com.flash.community.dto.ArticleDTO;
 import com.flash.community.entity.*;
 import com.flash.community.repository.*;
 import com.flash.common.exception.BusinessException;
@@ -34,7 +35,7 @@ public class ArticleService {
     private final SeriesRepository seriesRepository;
 
     @Cacheable(value = "articlePages", key = "#page + '-' + #size + '-' + #topicId + '-' + #currentUserId")
-    public Page<Article> listArticles(int page, int size, Long topicId, Long currentUserId) {
+    public Page<ArticleDTO> listArticles(int page, int size, Long topicId, Long currentUserId) {
         log.debug("listArticles: page={}, size={}, topicId={}", page, size, topicId);
         PageRequest pageable = PageRequest.of(page, size);
         Page<Article> result;
@@ -53,25 +54,25 @@ public class ArticleService {
                 result = new PageImpl<>(filtered, result.getPageable(), filtered.size());
             }
         }
-        return result;
+        return result.map(ArticleDTO::from);
     }
 
-    public Page<Article> getMyArticles(Long userId, int page, int size) {
+    public Page<ArticleDTO> getMyArticles(Long userId, int page, int size) {
         log.debug("getMyArticles: userId={}, page={}, size={}", userId, page, size);
         Page<Article> result = articleRepository.findByAuthorIdAndStatus(userId, Article.ArticleStatus.PUBLISHED, PageRequest.of(page, size));
         result.forEach(this::populateTags);
-        return result;
+        return result.map(ArticleDTO::from);
     }
 
-    public Page<Article> getMyDrafts(Long userId, int page, int size) {
+    public Page<ArticleDTO> getMyDrafts(Long userId, int page, int size) {
         log.debug("getMyDrafts: userId={}, page={}, size={}", userId, page, size);
         Page<Article> result = articleRepository.findByAuthorIdAndStatus(userId, Article.ArticleStatus.DRAFT, PageRequest.of(page, size));
         result.forEach(this::populateTags);
-        return result;
+        return result.map(ArticleDTO::from);
     }
 
     @Cacheable(value = "hotArticles", key = "#page + '-' + #size + '-' + #currentUserId")
-    public Page<Article> getHotArticles(int page, int size, Long currentUserId) {
+    public Page<ArticleDTO> getHotArticles(int page, int size, Long currentUserId) {
         log.debug("getHotArticles: page={}, size={}", page, size);
         Page<Article> result = articleRepository.findHotArticles(PageRequest.of(page, size));
         result.forEach(this::populateTags);
@@ -84,12 +85,17 @@ public class ArticleService {
                 result = new PageImpl<>(filtered, result.getPageable(), filtered.size());
             }
         }
-        return result;
+        return result.map(ArticleDTO::from);
     }
 
     @Transactional
-    public Article getArticle(Long id, Long currentUserId) {
-        log.debug("getArticle: id={}", id);
+    public ArticleDTO getArticle(Long id, Long currentUserId) {
+        return ArticleDTO.from(getArticleEntity(id, currentUserId));
+    }
+
+    @Transactional
+    public Article getArticleEntity(Long id, Long currentUserId) {
+        log.debug("getArticleEntity: id={}", id);
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new BusinessException("文章不存在"));
         if (currentUserId != null) {
@@ -107,7 +113,7 @@ public class ArticleService {
 
     @Transactional
     @CacheEvict(value = {"articlePages", "hotArticles"}, allEntries = true)
-    public Article createArticle(String title, String content, Long userId, Long topicId, String[] tagNames, Article.ArticleStatus status, Long seriesId, Integer seriesOrder) {
+    public ArticleDTO createArticle(String title, String content, Long userId, Long topicId, String[] tagNames, Article.ArticleStatus status, Long seriesId, Integer seriesOrder) {
         log.debug("createArticle: title={}, userId={}, topicId={}, status={}", title, userId, topicId, status);
         User author = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException("用户不存在"));
@@ -152,12 +158,13 @@ public class ArticleService {
                 log.debug("Tag attached: articleId={}, tagName={}", article.getId(), tagName);
             }
         }
-        return article;
+        populateTags(article);
+        return ArticleDTO.from(article);
     }
 
     @Transactional
     @CacheEvict(value = {"articlePages", "hotArticles"}, allEntries = true)
-    public Article updateArticle(Long id, Long userId, String title, String content, Long topicId, String[] tagNames, Long seriesId, Integer seriesOrder) {
+    public ArticleDTO updateArticle(Long id, Long userId, String title, String content, Long topicId, String[] tagNames, Long seriesId, Integer seriesOrder) {
         log.debug("updateArticle: id={}, userId={}", id, userId);
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new BusinessException("文章不存在"));
@@ -229,7 +236,7 @@ public class ArticleService {
         article = articleRepository.save(article);
         populateTags(article);
         log.info("Article updated: id={}, title={}", id, title);
-        return article;
+        return ArticleDTO.from(article);
     }
 
     @Transactional
@@ -254,7 +261,7 @@ public class ArticleService {
         log.info("Article deleted: id={}", id);
     }
 
-    public Page<Article> search(String keyword, int page, int size, Long currentUserId) {
+    public Page<ArticleDTO> search(String keyword, int page, int size, Long currentUserId) {
         log.debug("search: keyword={}, page={}, size={}", keyword, page, size);
         Page<Article> result = articleRepository.searchByKeyword(keyword, PageRequest.of(page, size));
         result.forEach(this::populateTags);
@@ -267,7 +274,7 @@ public class ArticleService {
                 result = new PageImpl<>(filtered, result.getPageable(), filtered.size());
             }
         }
-        return result;
+        return result.map(ArticleDTO::from);
     }
 
     @Transactional

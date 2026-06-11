@@ -2,6 +2,7 @@ package com.flash.community.service;
 
 import com.flash.auth.entity.User;
 import com.flash.auth.repository.UserRepository;
+import com.flash.community.dto.CommentDTO;
 import com.flash.community.dto.CommentTreeDTO;
 import com.flash.community.entity.Article;
 import com.flash.community.entity.Comment;
@@ -104,7 +105,7 @@ class CommentServiceTest {
         saved.setAuthor(author);
         when(commentRepository.save(any(Comment.class))).thenReturn(saved);
 
-        Comment result = commentService.createComment("test comment", 1L, 10L, null);
+        CommentDTO result = commentService.createComment("test comment", 1L, 10L, null);
 
         assertEquals("test comment", result.getContent());
         assertEquals(6, article.getCommentCount());
@@ -148,12 +149,14 @@ class CommentServiceTest {
         Comment saved = new Comment();
         saved.setId(100L);
         saved.setParent(parent);
+        saved.setAuthor(author);
+        saved.setArticle(article);
         when(commentRepository.save(any(Comment.class))).thenReturn(saved);
 
-        Comment result = commentService.createComment("reply", 1L, 10L, 50L);
+        CommentDTO result = commentService.createComment("reply", 1L, 10L, 50L);
 
-        assertNotNull(result.getParent());
-        assertEquals(50L, result.getParent().getId());
+        assertNotNull(result.getParentId());
+        assertEquals(50L, result.getParentId());
         verify(commentRepository).findById(50L);
     }
 
@@ -176,10 +179,14 @@ class CommentServiceTest {
     void updateComment_ownComment_updatesContent() {
         User author = new User();
         author.setId(1L);
+        author.setNickname("testuser");
+        Article article = new Article();
+        article.setId(1L);
         Comment comment = new Comment();
         comment.setId(1L);
         comment.setContent("Old");
         comment.setAuthor(author);
+        comment.setArticle(article);
 
         when(commentRepository.findById(1L)).thenReturn(Optional.of(comment));
 
@@ -187,9 +194,10 @@ class CommentServiceTest {
         updated.setId(1L);
         updated.setContent("New");
         updated.setAuthor(author);
+        updated.setArticle(article);
         when(commentRepository.save(any(Comment.class))).thenReturn(updated);
 
-        Comment result = commentService.updateComment(1L, 1L, "New");
+        CommentDTO result = commentService.updateComment(1L, 1L, "New");
 
         assertEquals("New", result.getContent());
     }

@@ -3,9 +3,9 @@ package com.flash.community.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flash.auth.jwt.CustomUserDetails;
 import com.flash.community.dto.CommentCreateRequest;
+import com.flash.community.dto.CommentDTO;
 import com.flash.community.dto.CommentTreeDTO;
 import com.flash.community.dto.CommentUpdateRequest;
-import com.flash.community.entity.Comment;
 import com.flash.community.service.CommentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -66,9 +66,7 @@ class CommentControllerTest {
         CommentCreateRequest request = new CommentCreateRequest();
         request.setContent("Nice article!");
 
-        Comment saved = new Comment();
-        saved.setId(100L);
-        saved.setContent("Nice article!");
+        CommentDTO saved = new CommentDTO(100L, "Nice article!", 1L, "testuser", null, 1L, null, 0, null, null);
         when(commentService.createComment(eq("Nice article!"), eq(1L), eq(1L), isNull()))
                 .thenReturn(saved);
 
@@ -95,9 +93,7 @@ class CommentControllerTest {
         CommentUpdateRequest req = new CommentUpdateRequest();
         req.setContent("Updated content");
 
-        Comment updated = new Comment();
-        updated.setId(1L);
-        updated.setContent("Updated content");
+        CommentDTO updated = new CommentDTO(1L, "Updated content", 1L, "testuser", null, 1L, null, 0, null, null);
         when(commentService.updateComment(eq(1L), eq(1L), eq("Updated content"))).thenReturn(updated);
 
         mockMvc.perform(put("/api/articles/1/comments/1")

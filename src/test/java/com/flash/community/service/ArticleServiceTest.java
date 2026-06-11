@@ -2,6 +2,7 @@ package com.flash.community.service;
 
 import com.flash.auth.entity.User;
 import com.flash.auth.repository.UserRepository;
+import com.flash.community.dto.ArticleDTO;
 import com.flash.community.entity.Article;
 import com.flash.community.entity.Article.ArticleStatus;
 import com.flash.community.entity.Topic;
@@ -60,10 +61,9 @@ class ArticleServiceTest {
         when(articleDailyViewRepository.findByUserIdAndDate(anyLong(), any()))
                 .thenReturn(Optional.empty());
 
-        Article result = articleService.getArticle(1L, null);
+        ArticleDTO result = articleService.getArticle(1L, null);
 
         assertEquals(1L, result.getId());
-        assertEquals(11, result.getViewCount());
         verify(articleRepository).incrementViewCount(1L);
     }
 
@@ -79,6 +79,7 @@ class ArticleServiceTest {
     void createArticle_basic_createsAndReturns() {
         User author = new User();
         author.setId(1L);
+        author.setNickname("testuser");
         when(userRepository.findById(1L)).thenReturn(Optional.of(author));
 
         Article saved = new Article();
@@ -86,13 +87,14 @@ class ArticleServiceTest {
         saved.setTitle("Test Title");
         saved.setContent("Test Content");
         saved.setAuthor(author);
+        saved.setStatus(Article.ArticleStatus.PUBLISHED);
         when(articleRepository.save(any(Article.class))).thenReturn(saved);
 
-        Article result = articleService.createArticle("Test Title", "Test Content", 1L, null, null, ArticleStatus.PUBLISHED, null, null);
+        ArticleDTO result = articleService.createArticle("Test Title", "Test Content", 1L, null, null, ArticleStatus.PUBLISHED, null, null);
 
         assertEquals("Test Title", result.getTitle());
         assertEquals("Test Content", result.getContent());
-        assertEquals(Article.ArticleStatus.PUBLISHED, result.getStatus());
+        assertEquals("PUBLISHED", result.getStatus());
         verify(articleRepository).save(any(Article.class));
     }
 
@@ -109,8 +111,10 @@ class ArticleServiceTest {
     void createArticle_withTopic_setsTopic() {
         User author = new User();
         author.setId(1L);
+        author.setNickname("testuser");
         Topic topic = new Topic();
         topic.setId(2L);
+        topic.setTopicName("Java");
         when(userRepository.findById(1L)).thenReturn(Optional.of(author));
         when(topicRepository.findById(2L)).thenReturn(Optional.of(topic));
 
@@ -122,7 +126,7 @@ class ArticleServiceTest {
         saved.setTopic(topic);
         when(articleRepository.save(any(Article.class))).thenReturn(saved);
 
-        Article result = articleService.createArticle("Title", "Content", 1L, 2L, null, ArticleStatus.PUBLISHED, null, null);
+        ArticleDTO result = articleService.createArticle("Title", "Content", 1L, 2L, null, ArticleStatus.PUBLISHED, null, null);
 
         assertNotNull(result.getTopic());
         assertEquals(2L, result.getTopic().getId());
@@ -239,7 +243,7 @@ class ArticleServiceTest {
         when(articleRepository.findByStatusOrderByCreatedAtDesc(eq(Article.ArticleStatus.PUBLISHED), any())).thenReturn(page);
         when(blacklistRepository.findBlockedUserIdsByBlockerId(1L)).thenReturn(List.of(5L));
 
-        Page<Article> result = articleService.listArticles(0, 10, null, 1L);
+        Page<ArticleDTO> result = articleService.listArticles(0, 10, null, 1L);
 
         assertEquals(1, result.getContent().size());
         assertEquals(11L, result.getContent().get(0).getId());

@@ -24,7 +24,7 @@ public class SpaController {
         String ua = request.getHeader("User-Agent");
         if (ua != null && isCrawler(ua)) {
             try {
-                Article article = articleService.getArticle(id, null);
+                Article article = articleService.getArticleEntity(id, null);
                 response.setContentType("text/html;charset=UTF-8");
                 response.getWriter().write(buildArticleHtml(article, request));
                 return null;

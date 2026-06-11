@@ -2,8 +2,8 @@ package com.flash.community.controller;
 
 import com.flash.auth.jwt.CustomUserDetails;
 import com.flash.common.dto.ApiResponse;
+import com.flash.community.dto.ArticleDTO;
 import com.flash.community.dto.AuthorProfileResponse;
-import com.flash.community.entity.Article;
 import com.flash.community.service.AuthorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,7 +26,7 @@ public class AuthorController {
     }
 
     @GetMapping("/{userId}/articles")
-    public ApiResponse<Page<Article>> articles(
+    public ApiResponse<Page<ArticleDTO>> articles(
             @PathVariable Long userId,
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(defaultValue = "0") int page,

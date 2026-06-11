@@ -3,6 +3,7 @@ package com.flash.community.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flash.auth.jwt.CustomUserDetails;
 import com.flash.community.dto.ArticleCreateRequest;
+import com.flash.community.dto.ArticleDTO;
 import com.flash.community.entity.Article;
 import com.flash.community.entity.Article.ArticleStatus;
 import com.flash.community.service.ArticleService;
@@ -73,10 +74,8 @@ class ArticleControllerTest {
 
     @Test
     void detail_exists_returnsArticle() throws Exception {
-        Article article = new Article();
-        article.setId(1L);
-        article.setTitle("Test");
-        when(articleService.getArticle(1L, 1L)).thenReturn(article);
+        ArticleDTO articleDTO = new ArticleDTO(1L, "Test", null, null, null, null, null, 0, 0, 0, "PUBLISHED", null, null, null);
+        when(articleService.getArticle(1L, 1L)).thenReturn(articleDTO);
 
         mockMvc.perform(get("/api/articles/1"))
                 .andExpect(status().isOk())
@@ -100,10 +99,7 @@ class ArticleControllerTest {
         request.setTitle("New Article");
         request.setContent("New Content");
 
-        Article saved = new Article();
-        saved.setId(10L);
-        saved.setTitle("New Article");
-        saved.setContent("New Content");
+        ArticleDTO saved = new ArticleDTO(10L, "New Article", "New Content", null, null, null, null, 0, 0, 0, "PUBLISHED", null, null, null);
         when(articleService.createArticle(eq("New Article"), eq("New Content"), eq(1L), isNull(), isNull(), eq(ArticleStatus.PUBLISHED), isNull(), isNull()))
                 .thenReturn(saved);
 

@@ -3,9 +3,10 @@ package com.flash.community.controller;
 import com.flash.auth.jwt.CustomUserDetails;
 import com.flash.common.dto.ApiResponse;
 import com.flash.community.dto.CommentCreateRequest;
+import com.flash.community.dto.CommentCreateRequest;
+import com.flash.community.dto.CommentDTO;
 import com.flash.community.dto.CommentTreeDTO;
 import com.flash.community.dto.CommentUpdateRequest;
-import com.flash.community.entity.Comment;
 import com.flash.community.service.CommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class CommentController {
     }
 
     @PostMapping
-    public ApiResponse<Comment> create(
+    public ApiResponse<CommentDTO> create(
             @PathVariable Long articleId,
             @Valid @RequestBody CommentCreateRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -42,7 +43,7 @@ public class CommentController {
     }
 
     @PutMapping("/{commentId}")
-    public ApiResponse<Comment> update(
+    public ApiResponse<CommentDTO> update(
             @PathVariable Long articleId,
             @PathVariable Long commentId,
             @Valid @RequestBody CommentUpdateRequest request,
