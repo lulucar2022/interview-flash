@@ -128,23 +128,24 @@ class NotificationControllerTest {
 
     @Test
     void markRead_returnsSuccess() throws Exception {
-        doNothing().when(notificationService).markAsRead(42L);
+        when(notificationService.markAsRead(42L, 1L)).thenReturn(true);
 
         mockMvc.perform(put("/api/notifications/42/read"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.code").value(200));
 
-        verify(notificationService).markAsRead(42L);
+        verify(notificationService).markAsRead(42L, 1L);
     }
 
     @Test
-    void markRead_differentId_passesCorrectParam() throws Exception {
-        doNothing().when(notificationService).markAsRead(100L);
+    void markRead_notFound_returnsError() throws Exception {
+        when(notificationService.markAsRead(100L, 1L)).thenReturn(false);
 
         mockMvc.perform(put("/api/notifications/100/read"))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.code").value(404));
 
-        verify(notificationService).markAsRead(100L);
+        verify(notificationService).markAsRead(100L, 1L);
     }
 
     // ── PUT /api/notifications/read-all ──

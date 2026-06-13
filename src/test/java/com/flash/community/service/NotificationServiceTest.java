@@ -146,36 +146,31 @@ class NotificationServiceTest {
     // ── markAsRead ──
 
     @Test
-    void markAsRead_existingNotification_marksTrue() {
-        Notification n = buildNotification(1L, 1L, "follow", 2L);
-        n.setIsRead(false);
-        when(notificationRepository.findById(1L)).thenReturn(Optional.of(n));
+    void markAsRead_existingNotification_returnsTrue() {
+        when(notificationRepository.markAsReadByUser(1L, 1L)).thenReturn(1);
 
-        notificationService.markAsRead(1L);
+        boolean result = notificationService.markAsRead(1L, 1L);
 
-        assertTrue(n.getIsRead());
-        verify(notificationRepository).save(n);
+        assertTrue(result);
+        verify(notificationRepository).markAsReadByUser(1L, 1L);
     }
 
     @Test
-    void markAsRead_nonExisting_doesNothing() {
-        when(notificationRepository.findById(999L)).thenReturn(Optional.empty());
+    void markAsRead_nonExisting_returnsFalse() {
+        when(notificationRepository.markAsReadByUser(999L, 1L)).thenReturn(0);
 
-        notificationService.markAsRead(999L);
+        boolean result = notificationService.markAsRead(999L, 1L);
 
-        verify(notificationRepository, never()).save(any());
+        assertFalse(result);
     }
 
     @Test
-    void markAsRead_alreadyRead_stillSaves() {
-        Notification n = buildNotification(1L, 1L, "follow", 2L);
-        n.setIsRead(true);
-        when(notificationRepository.findById(1L)).thenReturn(Optional.of(n));
+    void markAsRead_wrongUser_returnsFalse() {
+        when(notificationRepository.markAsReadByUser(1L, 2L)).thenReturn(0);
 
-        notificationService.markAsRead(1L);
+        boolean result = notificationService.markAsRead(1L, 2L);
 
-        assertTrue(n.getIsRead());
-        verify(notificationRepository).save(n);
+        assertFalse(result);
     }
 
     // ── markAllAsRead ──

@@ -33,8 +33,12 @@ public class NotificationController {
     }
 
     @PutMapping("/{id}/read")
-    public ApiResponse<Void> markRead(@PathVariable Long id) {
-        notificationService.markAsRead(id);
+    public ApiResponse<Void> markRead(@PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        boolean success = notificationService.markAsRead(id, userDetails.getId());
+        if (!success) {
+            return ApiResponse.error(404, "通知不存在或无权操作");
+        }
         return ApiResponse.success();
     }
 

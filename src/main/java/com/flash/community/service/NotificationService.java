@@ -49,11 +49,10 @@ public class NotificationService {
         return notificationRepository.countByUserIdAndIsReadFalse(userId);
     }
 
-    public void markAsRead(Long notificationId) {
-        notificationRepository.findById(notificationId).ifPresent(n -> {
-            n.setIsRead(true);
-            notificationRepository.save(n);
-        });
+    @Transactional
+    public boolean markAsRead(Long notificationId, Long userId) {
+        int updated = notificationRepository.markAsReadByUser(notificationId, userId);
+        return updated > 0;
     }
 
     @Transactional
