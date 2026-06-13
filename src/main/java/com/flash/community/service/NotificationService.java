@@ -5,6 +5,10 @@ import com.flash.auth.repository.UserRepository;
 import com.flash.community.dto.NotificationDTO;
 import com.flash.community.entity.Notification;
 import com.flash.community.repository.NotificationRepository;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -25,17 +29,19 @@ public class NotificationService {
     public Page<NotificationDTO> getUserNotifications(Long userId, int page, int size) {
         Page<Notification> notifications = notificationRepository.findByUserIdOrderByCreatedAtDesc(
             userId, PageRequest.of(page, size));
+        // 批量查询发送者信息，避免 N+1
+        Set<Long> fromUserIds = notifications.getContent().stream()
+            .map(Notification::getFromUserId)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toSet());
+        Map<Long, User> userMap = fromUserIds.isEmpty() ? Map.of() :
+            userRepository.findAllById(fromUserIds).stream()
+                .collect(Collectors.toMap(User::getId, u -> u));
         return notifications.map(n -> {
-            String nickname = null;
-            String avatar = null;
-            if (n.getFromUserId() != null) {
-                User fromUser = userRepository.findById(n.getFromUserId()).orElse(null);
-                if (fromUser != null) {
-                    nickname = fromUser.getNickname();
-                    avatar = fromUser.getAvatarUrl();
-                }
-            }
-            return NotificationDTO.from(n, nickname, avatar);
+            User fromUser = n.getFromUserId() != null ? userMap.get(n.getFromUserId()) : null;
+            return NotificationDTO.from(n,
+                fromUser != null ? fromUser.getNickname() : null,
+                fromUser != null ? fromUser.getAvatarUrl() : null);
         });
     }
 
