@@ -25,35 +25,33 @@ public class LikeService {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new BusinessException("文章不存在"));
 
-        boolean liked = articleLikeRepository.findByArticleIdAndUserId(articleId, userId)
-                .map(like -> {
-                    articleLikeRepository.delete(like);
-                    article.setThumbsUpCount(article.getThumbsUpCount() - 1);
-                    articleRepository.save(article);
-                    log.info("Unliked: articleId={}, userId={}", articleId, userId);
-                    return false;
-                })
-                .orElseGet(() -> {
-                    ArticleLike like = new ArticleLike();
-                    like.setArticleId(articleId);
-                    like.setUserId(userId);
-                    articleLikeRepository.save(like);
-                    article.setThumbsUpCount(article.getThumbsUpCount() + 1);
-                    articleRepository.save(article);
-                    log.info("Liked: articleId={}, userId={}", articleId, userId);
+        var existingLike = articleLikeRepository.findByArticleIdAndUserId(articleId, userId);
+        if (existingLike.isPresent()) {
+            // 取消点赞：删除记录 + 原子递减计数
+            articleLikeRepository.delete(existingLike.get());
+            articleRepository.decrementThumbsUpCount(articleId);
+            log.info("Unliked: articleId={}, userId={}", articleId, userId);
+            return false;
+        } else {
+            // 点赞：创建记录 + 原子递增计数
+            ArticleLike like = new ArticleLike();
+            like.setArticleId(articleId);
+            like.setUserId(userId);
+            articleLikeRepository.save(like);
+            articleRepository.incrementThumbsUpCount(articleId);
+            log.info("Liked: articleId={}, userId={}", articleId, userId);
 
-                    if (!article.getAuthor().getId().equals(userId)) {
-                        notificationService.createNotification(
-                                article.getAuthor().getId(),
-                                "like",
-                                "赞了你的文章",
-                                userId,
-                                articleId
-                        );
-                    }
-                    return true;
-                });
-        return liked;
+            if (!article.getAuthor().getId().equals(userId)) {
+                notificationService.createNotification(
+                        article.getAuthor().getId(),
+                        "like",
+                        "赞了你的文章",
+                        userId,
+                        articleId
+                );
+            }
+            return true;
+        }
     }
 
     public boolean hasLiked(Long articleId, Long userId) {

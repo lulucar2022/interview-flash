@@ -116,8 +116,7 @@ public class CommentService {
         }
 
         comment = commentRepository.save(comment);
-        article.setCommentCount(article.getCommentCount() + 1);
-        articleRepository.save(article);
+        articleRepository.incrementCommentCount(articleId);
         log.info("Comment created: id={}, articleId={}, userId={}", comment.getId(), articleId, userId);
 
         if (!article.getAuthor().getId().equals(userId)) {
@@ -179,8 +178,7 @@ public class CommentService {
         Optional<CommentLike> existing = commentLikeRepository.findByCommentIdAndUserId(commentId, userId);
         if (existing.isPresent()) {
             commentLikeRepository.delete(existing.get());
-            comment.setLikeCount(Math.max(0, comment.getLikeCount() - 1));
-            commentRepository.save(comment);
+            commentRepository.decrementLikeCount(commentId);
             log.info("Comment unliked: commentId={}, userId={}", commentId, userId);
             return false;
         } else {
@@ -188,8 +186,7 @@ public class CommentService {
             like.setCommentId(commentId);
             like.setUserId(userId);
             commentLikeRepository.save(like);
-            comment.setLikeCount(comment.getLikeCount() + 1);
-            commentRepository.save(comment);
+            commentRepository.incrementLikeCount(commentId);
             log.info("Comment liked: commentId={}, userId={}", commentId, userId);
 
             if (!comment.getAuthor().getId().equals(userId)) {

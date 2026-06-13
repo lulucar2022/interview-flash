@@ -108,9 +108,8 @@ class CommentServiceTest {
         CommentDTO result = commentService.createComment("test comment", 1L, 10L, null);
 
         assertEquals("test comment", result.getContent());
-        assertEquals(6, article.getCommentCount());
+        verify(articleRepository).incrementCommentCount(1L);
         verify(commentRepository).save(any(Comment.class));
-        verify(articleRepository).save(article);
     }
 
     @Test
@@ -252,7 +251,7 @@ class CommentServiceTest {
         boolean result = commentService.toggleLike(1L, 1L);
 
         assertTrue(result);
-        assertEquals(1, comment.getLikeCount());
+        verify(commentRepository).incrementLikeCount(1L);
         verify(commentLikeRepository).save(any(CommentLike.class));
     }
 
@@ -271,7 +270,7 @@ class CommentServiceTest {
         boolean result = commentService.toggleLike(1L, 1L);
 
         assertFalse(result);
-        assertEquals(0, comment.getLikeCount());
+        verify(commentRepository).decrementLikeCount(1L);
         verify(commentLikeRepository).delete(like);
     }
 }
