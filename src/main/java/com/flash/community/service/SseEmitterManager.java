@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -62,19 +63,22 @@ public class SseEmitterManager {
         log.debug("SSE removed: userId={}", userId);
     }
 
-    public void sendNotification(Long userId, String type, String summary, Long fromUserId, String fromUserNickname, Long targetId) {
+    public void sendNotification(Long userId, String type, String summary,
+            Long fromUserId, String fromUserNickname, String fromUserAvatar,
+            Long notificationId, Long targetId) {
         CopyOnWriteArrayList<SseEmitter> emitters = userEmitters.get(userId);
         if (emitters == null || emitters.isEmpty()) return;
 
         try {
-            Map<String, Object> data = Map.of(
-                "type", type,
-                "summary", summary,
-                "fromUserId", fromUserId,
-                "fromUserNickname", fromUserNickname != null ? fromUserNickname : "",
-                "targetId", targetId,
-                "createdAt", java.time.LocalDateTime.now().toString()
-            );
+            Map<String, Object> data = new HashMap<>();
+            data.put("id", notificationId);
+            data.put("type", type);
+            data.put("summary", summary);
+            data.put("fromUserId", fromUserId);
+            data.put("fromUserNickname", fromUserNickname != null ? fromUserNickname : "");
+            data.put("fromUserAvatar", fromUserAvatar != null ? fromUserAvatar : "");
+            data.put("targetId", targetId);
+            data.put("createdAt", java.time.LocalDateTime.now().toString());
             String json = objectMapper.writeValueAsString(data);
             SseEmitter.SseEventBuilder event = SseEmitter.event().name("notification").data(json);
 

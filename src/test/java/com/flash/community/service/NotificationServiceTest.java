@@ -211,7 +211,7 @@ class NotificationServiceTest {
         assertEquals("follow", result.getType());
         assertEquals("关注了你", result.getSummary());
         verify(notificationRepository).save(any(Notification.class));
-        verify(sseEmitterManager).sendNotification(eq(1L), eq("follow"), eq("关注了你"), eq(2L), eq("Alice"), isNull());
+        verify(sseEmitterManager).sendNotification(eq(1L), eq("follow"), eq("关注了你"), eq(2L), eq("Alice"), isNull(), eq(10L), isNull());
     }
 
     @Test
@@ -226,7 +226,7 @@ class NotificationServiceTest {
 
         assertNotNull(result);
         verify(userRepository, never()).findById(anyLong());
-        verify(sseEmitterManager).sendNotification(eq(1L), eq("system"), eq("系统通知"), isNull(), isNull(), isNull());
+        verify(sseEmitterManager).sendNotification(eq(1L), eq("system"), eq("系统通知"), isNull(), isNull(), isNull(), eq(11L), isNull());
     }
 
     @Test
@@ -237,7 +237,7 @@ class NotificationServiceTest {
 
         notificationService.createNotification(1L, "comment", "评论了你的文章", 2L, 42L);
 
-        verify(sseEmitterManager).sendNotification(eq(1L), eq("comment"), eq("评论了你的文章"), eq(2L), eq("Bob"), eq(42L));
+        verify(sseEmitterManager).sendNotification(eq(1L), eq("comment"), eq("评论了你的文章"), eq(2L), eq("Bob"), isNull(), any(), eq(42L));
     }
 
     @Test
@@ -247,6 +247,6 @@ class NotificationServiceTest {
 
         notificationService.createNotification(1L, "like", "点赞了你", 999L, 5L);
 
-        verify(sseEmitterManager).sendNotification(eq(1L), eq("like"), eq("点赞了你"), eq(999L), isNull(), eq(5L));
+        verify(sseEmitterManager).sendNotification(eq(1L), eq("like"), eq("点赞了你"), eq(999L), isNull(), isNull(), any(), eq(5L));
     }
 }

@@ -1,6 +1,5 @@
 package com.flash.community.service;
 
-import com.flash.community.entity.Article;
 import com.flash.community.entity.ArticleLike;
 import com.flash.community.repository.ArticleLikeRepository;
 import com.flash.community.repository.ArticleRepository;
@@ -22,7 +21,7 @@ public class LikeService {
     @Transactional
     public boolean toggleLike(Long articleId, Long userId) {
         log.debug("toggleLike: articleId={}, userId={}", articleId, userId);
-        Article article = articleRepository.findById(articleId)
+        Long authorId = articleRepository.findAuthorIdById(articleId)
                 .orElseThrow(() -> new BusinessException("文章不存在"));
 
         var existingLike = articleLikeRepository.findByArticleIdAndUserId(articleId, userId);
@@ -41,9 +40,9 @@ public class LikeService {
             articleRepository.incrementThumbsUpCount(articleId);
             log.info("Liked: articleId={}, userId={}", articleId, userId);
 
-            if (!article.getAuthor().getId().equals(userId)) {
+            if (!authorId.equals(userId)) {
                 notificationService.createNotification(
-                        article.getAuthor().getId(),
+                        authorId,
                         "like",
                         "赞了你的文章",
                         userId,

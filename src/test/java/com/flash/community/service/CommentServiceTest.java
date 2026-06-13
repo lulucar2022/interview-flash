@@ -233,7 +233,7 @@ class CommentServiceTest {
         commentService.deleteComment(1L, 1L);
 
         verify(commentRepository).delete(comment);
-        assertEquals(2, article.getCommentCount());
+        verify(articleRepository).decrementCommentCount(eq(1L), eq(1));
     }
 
     @Test

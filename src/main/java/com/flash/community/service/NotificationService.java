@@ -36,7 +36,7 @@ public class NotificationService {
             .collect(Collectors.toSet());
         Map<Long, User> userMap = fromUserIds.isEmpty() ? Map.of() :
             userRepository.findAllById(fromUserIds).stream()
-                .collect(Collectors.toMap(User::getId, u -> u));
+                .collect(Collectors.toMap(User::getId, u -> u, (u1, u2) -> u1));
         return notifications.map(n -> {
             User fromUser = n.getFromUserId() != null ? userMap.get(n.getFromUserId()) : null;
             return NotificationDTO.from(n,
@@ -77,10 +77,16 @@ public class NotificationService {
         log.info("Notification created: id={}, userId={}, type={}", saved.getId(), userId, type);
 
         String fromUserNickname = null;
+        String fromUserAvatar = null;
         if (fromUserId != null) {
-            fromUserNickname = userRepository.findById(fromUserId).map(User::getNickname).orElse(null);
+            User fromUser = userRepository.findById(fromUserId).orElse(null);
+            if (fromUser != null) {
+                fromUserNickname = fromUser.getNickname();
+                fromUserAvatar = fromUser.getAvatarUrl();
+            }
         }
-        sseEmitterManager.sendNotification(userId, type, summary, fromUserId, fromUserNickname, targetId);
+        sseEmitterManager.sendNotification(userId, type, summary, fromUserId,
+            fromUserNickname, fromUserAvatar, saved.getId(), targetId);
 
         return saved;
     }

@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 public interface ArticleRepository extends JpaRepository<Article, Long> {
 
@@ -47,6 +48,14 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     @Transactional
     @Query("UPDATE Article a SET a.commentCount = a.commentCount + 1 WHERE a.id = :id")
     void incrementCommentCount(@Param("id") Long id);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Article a SET a.commentCount = GREATEST(0, a.commentCount - :count) WHERE a.id = :id")
+    void decrementCommentCount(@Param("id") Long id, @Param("count") int count);
+
+    @Query("SELECT a.author.id FROM Article a WHERE a.id = :id")
+    Optional<Long> findAuthorIdById(@Param("id") Long id);
 
     long countByAuthorIdAndStatus(Long authorId, Article.ArticleStatus status);
 

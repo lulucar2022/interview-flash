@@ -160,10 +160,8 @@ public class CommentService {
             commentRepository.save(child);
         }
 
-        Article article = comment.getArticle();
         int deletedCount = 1 + children.size();
-        article.setCommentCount(Math.max(0, article.getCommentCount() - deletedCount));
-        articleRepository.save(article);
+        articleRepository.decrementCommentCount(comment.getArticle().getId(), deletedCount);
 
         commentRepository.delete(comment);
         log.info("Comment deleted: id={}", commentId);
